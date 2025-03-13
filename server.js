@@ -4,8 +4,13 @@ const { createServer } = require("http")
 const httpServer = createServer()
 const io = new Server(httpServer, {
   cors: {
-    origin: ["http://localhost:3000", "http://localhost:3001"],
+    origin: [
+      "http://localhost:3000",
+      "http://localhost:3001",
+      "https://letsee-ten.vercel.app"  // Vercel URL'iniz
+    ],
     methods: ["GET", "POST"],
+    credentials: true
   },
 })
 

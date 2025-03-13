@@ -7,6 +7,9 @@ import { io } from "socket.io-client"
 import { ClipboardDocumentIcon } from '@heroicons/react/24/outline';
 import { Toaster, toast } from 'react-hot-toast'
 
+// Socket.IO sunucu URL'ini ortama göre ayarla
+const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3002"
+
 interface Player {
   id: string
   name: string
@@ -29,7 +32,7 @@ export default function GamePage({ params }: { params: { code: string } }) {
   const [socket, setSocket] = useState<any>(null)
 
   useEffect(() => {
-    const newSocket = io("http://localhost:3002", {
+    const newSocket = io(SOCKET_URL, {
       query: { 
         gameCode: params.code,
         isAdmin: isAdmin.toString()
