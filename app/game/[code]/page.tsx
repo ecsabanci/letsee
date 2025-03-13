@@ -6,9 +6,16 @@ import { Button } from "@/app/components/ui/button"
 import { io } from "socket.io-client"
 import { ClipboardDocumentIcon } from '@heroicons/react/24/outline';
 import { Toaster, toast } from 'react-hot-toast'
+import { useRouter } from "next/navigation"
 
 // Socket.IO sunucu URL'ini ortama göre ayarla
 const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3002"
+
+interface JoinRequest {
+  id: string
+  name: string
+  timestamp: number
+}
 
 interface Player {
   id: string
@@ -16,6 +23,15 @@ interface Player {
   answer: string
   isReady: boolean
   isAdmin: boolean
+}
+
+interface JoinRequestApprovedData {
+  gameCode: string
+  currentGameState?: {
+    question: string
+    isStarted: boolean
+    showingAnswers: boolean
+  }
 }
 
 export default function GamePage({ params }: { params: { code: string } }) {
@@ -30,6 +46,16 @@ export default function GamePage({ params }: { params: { code: string } }) {
   const [showAnswers, setShowAnswers] = useState(false)
   const [players, setPlayers] = useState<Player[]>([])
   const [socket, setSocket] = useState<any>(null)
+  const [joinRequests, setJoinRequests] = useState<JoinRequest[]>([])
+  const router = useRouter()
+
+  useEffect(() => {
+    // Eğer localStorage'da isim varsa, otomatik olarak ayarla
+    const savedName = localStorage.getItem("playerName")
+    if (savedName) {
+      setPlayerName(savedName)
+    }
+  }, [])
 
   useEffect(() => {
     const newSocket = io(SOCKET_URL, {
@@ -69,15 +95,38 @@ export default function GamePage({ params }: { params: { code: string } }) {
       setQuestion("")
     })
 
+    newSocket.on("joinRequest", (data) => {
+      setJoinRequests(data.requests)
+    })
+
+    newSocket.on("gameEnded", () => {
+      router.push("/")
+    })
+
+    // Yeni katılan oyuncu için mevcut oyun durumunu ayarla
+    newSocket.on("joinRequestApproved", (data: JoinRequestApprovedData) => {
+      console.log("Join request approved with data:", data) // Debug için
+      if (data.currentGameState) {
+        setGameStarted(data.currentGameState.isStarted)
+        setShowAnswers(data.currentGameState.showingAnswers)
+        setQuestion(data.currentGameState.question)
+      }
+    })
+
     setSocket(newSocket)
 
+    // Oyundan çıkıldığında temizlik yap
     return () => {
-      newSocket.close()
+      if (newSocket) {
+        newSocket.emit("leaveGame")
+        newSocket.close()
+      }
     }
   }, [params.code, isAdmin])
 
   const handleSetName = () => {
     if (playerName.trim()) {
+      localStorage.setItem("playerName", playerName) // İsmi kaydet
       socket.emit("setName", playerName)
       setIsNameSet(true)
     }
@@ -112,6 +161,29 @@ export default function GamePage({ params }: { params: { code: string } }) {
     })
   }
 
+  const handleApproveRequest = (playerId: string) => {
+    socket.emit("approveJoinRequest", {
+      gameCode: params.code,
+      playerId
+    })
+    setJoinRequests(prev => prev.filter(req => req.id !== playerId))
+  }
+
+  const handleRejectRequest = (playerId: string) => {
+    socket.emit("rejectJoinRequest", {
+      gameCode: params.code,
+      playerId
+    })
+    setJoinRequests(prev => prev.filter(req => req.id !== playerId))
+  }
+
+  const handleEndGame = () => {
+    if (socket) {
+      socket.emit("endGame")
+      router.push("/")
+    }
+  }
+
   if (!isNameSet) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-blue-100 to-white p-4">
@@ -136,15 +208,25 @@ export default function GamePage({ params }: { params: { code: string } }) {
   const totalPlayerCount = players.length
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-100 to-white p-8">
+    <div className="min-h-screen bg-gradient-to-b from-blue-100 to-white p-4 md:p-8">
       <Toaster />
       <div className="max-w-4xl mx-auto space-y-8">
         <div className="bg-white rounded-lg shadow-lg p-6">
-          <div className="flex items-center mb-4">
-            <h1 className="text-2xl font-bold">Oyun Kodu: {params.code}</h1>
-            <button onClick={handleCopyCode} className="ml-4 hover:text-blue-600 transition-colors">
-              <ClipboardDocumentIcon className="w-6 h-6" />
-            </button>
+        {isAdmin && (
+            <Button
+            onClick={handleEndGame}
+            className="bg-red-600 hover:bg-red-700 text-white mb-4"
+            >
+            Oyunu Sonlandır
+            </Button>
+        )}
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center">
+              <h1 className="text-2xl font-bold">Oyun Kodu: {params.code}</h1>
+              <button onClick={handleCopyCode} className="ml-4 hover:text-blue-600 transition-colors">
+                <ClipboardDocumentIcon className="w-6 h-6" />
+              </button>
+            </div>
           </div>
           <div className="flex flex-wrap gap-2">
             {players.map((player) => (
@@ -221,6 +303,36 @@ export default function GamePage({ params }: { params: { code: string } }) {
                 Yeni Tur Başlat
               </Button>
             )}
+          </div>
+        )}
+
+        {isAdmin && joinRequests.length > 0 && (
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <h2 className="text-xl font-bold mb-4">Katılma İstekleri</h2>
+            <div className="space-y-3">
+              {joinRequests.map((request) => (
+                <div
+                  key={request.id}
+                  className="flex items-center justify-between border rounded-lg p-3"
+                >
+                  <span className="font-medium">{request.name}</span>
+                  <div className="space-x-2">
+                    <Button
+                      onClick={() => handleApproveRequest(request.id)}
+                      className="bg-green-600 hover:bg-green-700"
+                    >
+                      Onayla
+                    </Button>
+                    <Button
+                      onClick={() => handleRejectRequest(request.id)}
+                      className="bg-red-600 hover:bg-red-700"
+                    >
+                      Reddet
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>
