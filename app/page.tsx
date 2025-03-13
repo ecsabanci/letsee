@@ -20,7 +20,7 @@ export default function Home() {
   }
 
   return (
-    <main className="flex min-h-screen bg-red-500 flex-col items-center justify-center p-24 bg-gradient-to-b from-blue-100 to-white">
+    <main className="flex min-h-screen bg-red-500 flex-col items-center justify-center p-4 md:p-24 bg-gradient-to-b from-blue-100 to-white">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Oyun Zamanı!</h1>
