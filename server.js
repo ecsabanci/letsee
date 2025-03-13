@@ -71,23 +71,25 @@ io.on("connection", (socket) => {
 
   socket.on("submitAnswer", (answer) => {
     const player = game.players.get(socket.id)
-    if (player && !player.isAdmin && !game.showingAnswers) {  // Admin cevap veremez ve cevaplar gösterilirken yeni cevap verilemez
+    if (player && !game.showingAnswers) {  // Cevaplar gösterilirken yeni cevap verilemez
       player.answer = answer
       player.isReady = true
       io.to(gameCode).emit(
         "playerReady",
         Array.from(game.players.values())
       )
-    }
-  })
 
-  socket.on("showAnswers", () => {
-    if (socket.id === game.adminId) {
-      game.showingAnswers = true
-      io.to(gameCode).emit(
-        "answersRevealed",
-        Array.from(game.players.values())
-      )
+      // Tüm oyuncuların hazır olup olmadığını kontrol et
+      const allReady = Array.from(game.players.values()).every(p => p.isReady)
+      
+      // Eğer tüm oyuncular hazırsa ve admin de hazırsa, otomatik olarak cevapları göster
+      if (allReady) {
+        game.showingAnswers = true
+        io.to(gameCode).emit(
+          "answersRevealed",
+          Array.from(game.players.values())
+        )
+      }
     }
   })
 

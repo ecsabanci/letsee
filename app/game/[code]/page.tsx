@@ -91,10 +91,6 @@ export default function GamePage({ params }: { params: { code: string } }) {
     }
   }
 
-  const handleShowAnswers = () => {
-    socket.emit("showAnswers")
-  }
-
   const handleStartNewRound = () => {
     socket.emit("startNewRound")
   }
@@ -119,9 +115,8 @@ export default function GamePage({ params }: { params: { code: string } }) {
   }
 
   // Oyuncu sayısını ve hazır oyuncu sayısını hesapla
-  const nonAdminPlayers = players.filter(p => !p.isAdmin)
-  const readyPlayerCount = nonAdminPlayers.filter(p => p.isReady).length
-  const totalPlayerCount = nonAdminPlayers.length
+  const readyPlayerCount = players.filter(p => p.isReady).length
+  const totalPlayerCount = players.length
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-100 to-white p-8">
@@ -165,7 +160,7 @@ export default function GamePage({ params }: { params: { code: string } }) {
         {gameStarted && !showAnswers && (
           <div className="bg-white rounded-lg shadow-lg p-6 space-y-4">
             <div className="font-bold text-lg">{question}</div>
-            {!isReady && !isAdmin && (
+            {!isReady && (
               <>
                 <textarea
                   value={answer}
@@ -178,11 +173,6 @@ export default function GamePage({ params }: { params: { code: string } }) {
                 </Button>
               </>
             )}
-            {isAdmin && readyPlayerCount === totalPlayerCount && totalPlayerCount > 0 && (
-              <Button onClick={handleShowAnswers} className="w-full">
-                Cevapları Göster
-              </Button>
-            )}
           </div>
         )}
 
@@ -190,7 +180,7 @@ export default function GamePage({ params }: { params: { code: string } }) {
           <div className="bg-white rounded-lg shadow-lg p-6 space-y-4">
             <h2 className="text-xl font-bold mb-4">Cevaplar</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {players.filter(p => !p.isAdmin).map((player) => (
+              {players.map((player) => (
                 <div
                   key={player.id}
                   className="bg-gray-50 rounded-lg p-4 space-y-2"
