@@ -4,6 +4,8 @@ import { useEffect, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import { Button } from "@/app/components/ui/button"
 import { io } from "socket.io-client"
+import { ClipboardDocumentIcon } from '@heroicons/react/24/outline';
+import { Toaster, toast } from 'react-hot-toast'
 
 interface Player {
   id: string
@@ -95,6 +97,18 @@ export default function GamePage({ params }: { params: { code: string } }) {
     socket.emit("startNewRound")
   }
 
+  const handleCopyCode = async () => {
+    await navigator.clipboard.writeText(params.code)
+    toast.success('Oyun kodu kopyalandı!', {
+      duration: 2000,
+      position: 'top-center',
+      style: {
+        background: '#4CAF50',
+        color: '#fff',
+      },
+    })
+  }
+
   if (!isNameSet) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-blue-100 to-white p-4">
@@ -106,7 +120,7 @@ export default function GamePage({ params }: { params: { code: string } }) {
             placeholder="İsminizi girin"
             className="w-full px-4 py-2 border border-gray-300 rounded-md"
           />
-          <Button onClick={handleSetName} className="w-full">
+          <Button onClick={handleSetName} className="w-full bg-blue-600 text-white hover:bg-blue-700">
             Oyuna Katıl
           </Button>
         </div>
@@ -120,9 +134,15 @@ export default function GamePage({ params }: { params: { code: string } }) {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-100 to-white p-8">
+      <Toaster />
       <div className="max-w-4xl mx-auto space-y-8">
         <div className="bg-white rounded-lg shadow-lg p-6">
-          <h1 className="text-2xl font-bold mb-4">Oyun Kodu: {params.code}</h1>
+          <div className="flex items-center mb-4">
+            <h1 className="text-2xl font-bold">Oyun Kodu: {params.code}</h1>
+            <button onClick={handleCopyCode} className="ml-4 hover:text-blue-600 transition-colors">
+              <ClipboardDocumentIcon className="w-6 h-6" />
+            </button>
+          </div>
           <div className="flex flex-wrap gap-2">
             {players.map((player) => (
               <div
@@ -151,7 +171,7 @@ export default function GamePage({ params }: { params: { code: string } }) {
               placeholder="Sorunuzu yazın"
               className="w-full px-4 py-2 border border-gray-300 rounded-md"
             />
-            <Button onClick={handleStartGame} className="w-full">
+            <Button onClick={handleStartGame} className="w-full bg-blue-600 text-white hover:bg-blue-700">
               Oyunu Başlat
             </Button>
           </div>
@@ -168,7 +188,7 @@ export default function GamePage({ params }: { params: { code: string } }) {
                   placeholder="Cevabınızı yazın"
                   className="w-full px-4 py-2 border border-gray-300 rounded-md h-32"
                 />
-                <Button onClick={handleSubmitAnswer} className="w-full">
+                <Button onClick={handleSubmitAnswer} className="w-full bg-blue-600 text-white hover:bg-blue-700">
                   Hazır
                 </Button>
               </>
@@ -183,17 +203,17 @@ export default function GamePage({ params }: { params: { code: string } }) {
               {players.map((player) => (
                 <div
                   key={player.id}
-                  className="bg-gray-50 rounded-lg p-4 space-y-2"
+                  className="bg-emerald-500 text-black rounded-lg p-4 space-y-2"
                 >
                   <div className="font-bold">{player.name}</div>
-                  <div className="text-gray-700">{player.answer}</div>
+                  <div className="text-gray-800">{player.answer}</div>
                 </div>
               ))}
             </div>
             {isAdmin && (
               <Button
                 onClick={handleStartNewRound}
-                className="w-full mt-4"
+                className="w-full mt-4 bg-blue-600 text-white hover:bg-blue-700"
               >
                 Yeni Tur Başlat
               </Button>

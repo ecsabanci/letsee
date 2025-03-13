@@ -30,12 +30,12 @@ export default function Home() {
         <div className="space-y-4">
           <Button
             onClick={createGame}
-            className="w-full bg-blue-600 hover:bg-blue-700"
+            className="w-full bg-blue-600 text-white hover:bg-blue-700"
           >
             Yeni Oyun Oluştur
           </Button>
 
-          <div className="flex space-x-2">
+          <div className="flex items-center space-x-2">
             <input
               type="text"
               value={joinCode}
