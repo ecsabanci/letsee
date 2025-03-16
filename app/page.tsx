@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation"
 import { io } from "socket.io-client"
 import { toast, Toaster } from "react-hot-toast"
 import { Modal } from "./components/ui/modal"
-
+import { PuzzlePieceIcon, PlusIcon, PlayIcon, PlayCircleIcon, XMarkIcon, CheckIcon } from "@heroicons/react/24/outline"
 const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3002"
 
 interface ActiveGame {
@@ -102,69 +102,80 @@ export default function Home() {
   }, [activeGames])
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-4 md:p-24 bg-gradient-to-b from-blue-100 to-white">
+    <main className="flex min-h-screen flex-col items-center justify-center p-4 md:p-24 bg-gray-900 text-white">
       <Toaster />
       <div className="w-full max-w-4xl space-y-8">
         <div className="text-center">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Oyun Zamanı!</h1>
-          <p className="text-gray-600">Yeni bir oyun oluştur veya mevcut bir oyuna katıl</p>
+          <h1 className="text-4xl font-bold mb-2">Oyun Zamanı!</h1>
+          <p className="text-gray-400">Yeni bir oyun oluştur veya mevcut bir oyuna katıl</p>
         </div>
 
         <div className="space-y-4">
           {!showCreateGameInput ? (
             <Button
               onClick={() => setShowCreateGameInput(true)}
-              className="w-full bg-blue-600 text-white hover:bg-blue-700"
+              className="w-full bg-sky-600 text-white hover:bg-sky-700 flex items-center justify-center gap-2"
             >
               Yeni Oyun Oluştur
+              <PuzzlePieceIcon className="w-6 h-6" />
             </Button>
           ) : (
-            <div className="bg-white rounded-lg shadow p-4 space-y-4">
+            <div className="bg-gray-800 rounded-lg shadow p-4 space-y-4">
               <input
                 type="text"
                 value={adminName}
                 onChange={(e) => setAdminName(e.target.value)}
                 placeholder="İsminizi girin"
-                className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md text-black focus:outline-none"
+                autoFocus
               />
               <div className="flex space-x-2">
                 <Button
                   onClick={createGame}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+                  className="flex-1 bg-sky-600 hover:bg-sky-700 text-white flex items-center gap-1"
                 >
                   Oyunu Başlat
+                  <PlayIcon className="w-4 h-4" />
                 </Button>
                 <Button
-                  onClick={() => setShowCreateGameInput(false)}
-                  className="flex-1 bg-red-500 hover:bg-red-600 text-white"
+                  onClick={() => {
+                    setShowCreateGameInput(false)
+                    setAdminName("")
+                  }}
+                  className="flex-1 bg-red-500 hover:bg-red-600 text-white flex items-center gap-1"
                 >
                   İptal
+                  <XMarkIcon className="w-4 h-4" />
                 </Button>
               </div>
             </div>
           )}
 
-          <div className="flex items-center space-x-2">
-            <input
+          {
+            !showCreateGameInput && (
+              <div className="flex items-center space-x-2">
+                <input
               type="text"
               value={joinCode}
               onChange={(e) => setJoinCode(e.target.value)}
               placeholder="Oyun Kodunu Gir"
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none text-black"
             />
             <Button
               onClick={joinGame}
-              className="bg-green-600 hover:bg-green-700"
+              className="bg-lime-600 hover:bg-lime-700 flex items-center gap-1"
             >
-              Katıl
-            </Button>
-          </div>
+                  Katıl
+                  <PlusIcon className="w-4 h-4" />
+                </Button>
+              </div>
+            )
+          }
         </div>
 
         <Modal
           isOpen={showNameInput}
           onClose={() => setShowNameInput(false)}
-          title="İsminizi Girin"
         >
           <div className="space-y-4">
             <input
@@ -172,21 +183,23 @@ export default function Home() {
               value={playerName}
               onChange={(e) => setPlayerName(e.target.value)}
               placeholder="İsminizi girin"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md text-black focus:outline-none"
               autoFocus
             />
             <div className="flex space-x-2">
               <Button
                 onClick={sendJoinRequest}
-                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+                className="flex-1 bg-lime-600 hover:bg-lime-700 text-white flex items-center gap-1"
               >
                 İstek Gönder
+                <CheckIcon className="w-4 h-4" />
               </Button>
               <Button
                 onClick={() => setShowNameInput(false)}
-                className="flex-1 bg-red-500 hover:bg-red-600 text-white"
+                className="flex-1 bg-rose-500 hover:bg-rose-600 text-white flex items-center gap-1"
               >
                 İptal
+                <XMarkIcon className="w-4 h-4" />
               </Button>
             </div>
           </div>
@@ -194,7 +207,9 @@ export default function Home() {
 
         {activeGames.length > 0 && (
           <div className="mt-8">
-            <h2 className="text-xl font-bold mb-4">Aktif Oyunlar</h2>
+            <h2 className="text-xl font-bold mb-4">
+                Aktif Oyunlar
+            </h2>
             <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
               {activeGames.map((game) => (
                 <div
@@ -208,7 +223,7 @@ export default function Home() {
                       {game.isStarted ? "Oyun Başladı" : "Bekliyor"}
                     </span>
                   </div>
-                  <div className="text-sm text-gray-600">
+                  <div className="text-sm text-gray-400">
                     <p className="font-bold">Admin: {game.adminName}</p>
                     <p className="font-bold">Oyuncular: {game.playerCount}</p>
                     {game.currentQuestion && (
@@ -220,12 +235,14 @@ export default function Home() {
                   {!game.isEnded && (
                     <Button
                       onClick={() => handleJoinRequest(game.code)}
-                      className="w-full mt-2 bg-green-600 hover:bg-green-700 text-white"
+                      className="w-full mt-2 bg-lime-600 hover:bg-lime-700 text-white flex items-center gap-1"
                       disabled={game.pendingRequests.some(r => r.name === playerName)}
                     >
                       {game.pendingRequests.some(r => r.name === playerName)
                         ? "İstek Gönderildi"
                         : "Katılmak İstiyorum"}
+                    
+                        <PlusIcon className="w-4 h-4" />
                     </Button>
                   )}
                 </div>
