@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import { Button } from "@/app/components/ui/button"
 import { io } from "socket.io-client"
-import { ClipboardDocumentIcon } from '@heroicons/react/24/outline';
+import { CheckCircleIcon, ClipboardDocumentIcon } from '@heroicons/react/24/outline';
 import { Toaster, toast } from 'react-hot-toast'
 import { useRouter } from "next/navigation"
 import { UserPlusIcon } from "@heroicons/react/24/outline"
@@ -318,8 +318,9 @@ export default function GamePage({ params }: { params: { code: string } }) {
                   placeholder="Cevabınızı yazın"
                   className="w-full px-4 py-2 border border-gray-300 rounded-md h-32 text-black focus:outline-none"
                 />
-                <Button onClick={handleSubmitAnswer} className="w-full bg-sky-600 text-white hover:bg-sky-700">
+                <Button onClick={handleSubmitAnswer} className="w-full bg-sky-600 text-white hover:bg-sky-700 flex items-center gap-1">
                   Hazır
+                  <CheckCircleIcon className="w-4 h-4" />
                 </Button>
               </>
             )}

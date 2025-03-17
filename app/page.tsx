@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation"
 import { io } from "socket.io-client"
 import { toast, Toaster } from "react-hot-toast"
 import { Modal } from "./components/ui/modal"
-import { PuzzlePieceIcon, PlusIcon, PlayIcon, PlayCircleIcon, XMarkIcon, CheckIcon } from "@heroicons/react/24/outline"
+import { PuzzlePieceIcon, PlusIcon, PlayIcon, PlayCircleIcon, XMarkIcon, CheckIcon, HandRaisedIcon, ClockIcon } from "@heroicons/react/24/outline"
 const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3002"
 
 interface ActiveGame {
@@ -241,8 +241,13 @@ export default function Home() {
                       {game.pendingRequests.some(r => r.name === playerName)
                         ? "İstek Gönderildi"
                         : "Katılmak İstiyorum"}
+
+                    {game.pendingRequests.some(r => r.name === playerName) ? (
+                      <ClockIcon className="w-4 h-4" />
+                    ): (
+                        <HandRaisedIcon className="w-4 h-4" />
+                    )}
                     
-                        <PlusIcon className="w-4 h-4" />
                     </Button>
                   )}
                 </div>
