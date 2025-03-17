@@ -13,6 +13,7 @@ import { GameHeader } from "@/app/components/GameHeader"
 import { PlayersList } from "@/app/components/PlayersList"
 import { QuestionAnswerForm } from "@/app/components/QuestionAnswerForm"
 import { AnswersCard } from "@/app/components/AnswersCard"
+import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/outline"
 // Socket.IO sunucu URL'ini ortama göre ayarla
 const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3002"
 
@@ -351,7 +352,7 @@ export default function GamePage({ params }: { params: { code: string } }) {
                       }}
                       className="bg-lime-600 hover:bg-lime-700"
                     >
-                      Onayla
+                      <CheckCircleIcon className="w-6 h-6" />
                     </Button>
                     <Button
                       onClick={() => {
@@ -360,7 +361,7 @@ export default function GamePage({ params }: { params: { code: string } }) {
                       }}
                       className="bg-rose-500 hover:bg-rose-600"
                     >
-                      Reddet
+                      <XCircleIcon className="w-6 h-6" />
                     </Button>
                   </div>
                 </div>
