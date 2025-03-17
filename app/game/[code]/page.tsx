@@ -4,13 +4,15 @@ import { useEffect, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import { Button } from "@/app/components/ui/button"
 import { io } from "socket.io-client"
-import { CheckCircleIcon, ClipboardDocumentIcon } from '@heroicons/react/24/outline';
 import { Toaster, toast } from 'react-hot-toast'
 import { useRouter } from "next/navigation"
-import { UserPlusIcon } from "@heroicons/react/24/outline"
 import { Modal } from "@/app/components/ui/modal"
 import { EmojiBar } from "@/app/components/EmojiBar"
 import { FloatingEmoji } from "@/app/components/FloatingEmoji"
+import { GameHeader } from "@/app/components/GameHeader"
+import { PlayersList } from "@/app/components/PlayersList"
+import { QuestionAnswerForm } from "@/app/components/QuestionAnswerForm"
+import { AnswersCard } from "@/app/components/AnswersCard"
 // Socket.IO sunucu URL'ini ortama göre ayarla
 const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3002"
 
@@ -237,7 +239,6 @@ export default function GamePage({ params }: { params: { code: string } }) {
     )
   }
 
-  // Oyuncu sayısını ve hazır oyuncu sayısını hesapla
   const readyPlayerCount = players.filter(p => p.isReady).length
   const totalPlayerCount = players.length
 
@@ -246,50 +247,20 @@ export default function GamePage({ params }: { params: { code: string } }) {
       <Toaster />
       <div className="max-w-4xl mx-auto space-y-8 relative">
         <div className="bg-gray-800 rounded-lg shadow-lg p-6 animate-fade-in">
-        {isAdmin && (
-            <div className="flex items-center justify-between">
-                <Button
-                onClick={handleEndGame}
-                className="bg-rose-500 hover:bg-rose-600 text-white mb-4 animate-bounce-in"
-                >
-                Oyunu Sonlandır
-                </Button>
-                <Button
-                onClick={() => setShowJoinRequests(true)}
-                className="bg-lime-600 hover:bg-lime-700 text-white mb-4 flex items-center gap-2 animate-bounce-in"
-                >
-                    <UserPlusIcon className="w-6 h-6" />
-                    {joinRequests.length}
-                </Button>
-            </div>
-        )}
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center">
-              <h1 className="text-2xl font-bold">Oyun Kodu: <span className="text-teal-600">{params.code}</span></h1>
-              <button onClick={handleCopyCode} className="ml-4 hover:text-teal-600 transition-colors">
-                <ClipboardDocumentIcon className="w-6 h-6" />
-              </button>
-            </div>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {players.map((player) => (
-              <div
-                key={player.id}
-                className={`px-3 py-1 rounded-full text-sm border-2 animate-bounce-in ${
-                  player.isReady ? "bg-teal-400" : "bg-gray-800"
-                } ${player.isAdmin ? "border-sky-600" : "border-gray-600"} ${
-                  player.isReady ? "animate-pulse-slow" : ""
-                }`}
-              >
-                {player.name} {player.isAdmin ? "(Admin)" : ""}
-              </div>
-            ))}
-          </div>
-          {gameStarted && (
-            <div className="mt-4 text-sm text-gray-600">
-              {readyPlayerCount} / {totalPlayerCount} oyuncu hazır
-            </div>
-          )}
+            <GameHeader
+            gameCode={params.code}
+            isAdmin={isAdmin}
+            joinRequestCount={joinRequests.length}
+            onShowJoinRequests={() => setShowJoinRequests(true)}
+            onEndGame={handleEndGame}
+            />
+
+            <PlayersList
+            players={players}
+            gameStarted={gameStarted}
+            readyCount={readyPlayerCount}
+            totalCount={totalPlayerCount}
+            />
         </div>
 
         {isAdmin && !gameStarted && (
@@ -308,49 +279,21 @@ export default function GamePage({ params }: { params: { code: string } }) {
         )}
 
         {gameStarted && !showAnswers && (
-          <div className="bg-gray-800 rounded-lg shadow-lg p-6 space-y-4 animate-slide-in">
-            <div className="font-bold text-lg">{question}</div>
-            {!isReady && (
-              <>
-                <textarea
-                  value={answer}
-                  onChange={(e) => setAnswer(e.target.value)}
-                  placeholder="Cevabınızı yazın"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md h-32 text-black focus:outline-none"
-                />
-                <Button onClick={handleSubmitAnswer} className="w-full bg-sky-600 text-white hover:bg-sky-700 flex items-center gap-1">
-                  Hazır
-                  <CheckCircleIcon className="w-4 h-4" />
-                </Button>
-              </>
-            )}
-          </div>
+          <QuestionAnswerForm
+            question={question}
+            answer={answer}
+            onAnswerChange={setAnswer}
+            onSubmit={handleSubmitAnswer}
+            isReady={isReady}
+          />
         )}
 
         {showAnswers && (
-          <div className="bg-gray-800 rounded-lg shadow-lg p-6 space-y-4 animate-slide-in">
-            <h2 className="text-xl font-bold mb-4">Cevaplar</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {players.map((player, index) => (
-                <div
-                  key={player.id}
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                  className="bg-emerald-500 text-black rounded-lg p-4 space-y-2 animate-bounce-in"
-                >
-                  <div className="font-bold">{player.name}</div>
-                  <div className="text-gray-800">{player.answer}</div>
-                </div>
-              ))}
-            </div>
-            {isAdmin && (
-              <Button
-                onClick={handleStartNewRound}
-                className="w-full mt-4 bg-blue-600 text-white hover:bg-blue-700"
-              >
-                Yeni Tur Başlat
-              </Button>
-            )}
-          </div>
+          <AnswersCard
+            players={players}
+            isAdmin={isAdmin}
+            onStartNewRound={handleStartNewRound}
+          />
         )}
 
         <Modal
