@@ -14,6 +14,7 @@ import { PlayersList } from "@/app/components/PlayersList"
 import { QuestionAnswerForm } from "@/app/components/QuestionAnswerForm"
 import { AnswersCard } from "@/app/components/AnswersCard"
 import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/outline"
+import { QuestionGenerator } from "@/app/components/QuestionGenerator"
 // Socket.IO sunucu URL'ini ortama göre ayarla
 const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3002"
 
@@ -299,11 +300,11 @@ export default function GamePage({ params }: { params: { code: string } }) {
 
         {isAdmin && !gameStarted && (
           <div className="bg-gray-800 rounded-lg shadow-lg p-6 space-y-4 animate-slide-in">
-            <input
-              type="text"
+            <QuestionGenerator onQuestionGenerated={setQuestion} />
+            <textarea
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
-              placeholder="Sorunuzu yazın"
+              placeholder="Sorunuzu yazın veya üretin"
               className="w-full px-4 py-2 border border-gray-300 rounded-md text-black focus:outline-none"
             />
             <Button onClick={handleStartGame} className="w-full bg-sky-600 text-white hover:bg-sky-700">

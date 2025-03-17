@@ -42,11 +42,11 @@ export function ActiveGameCard({
       <div className="text-sm text-gray-400">
         <p className="font-bold">Admin: {adminName}</p>
         <p className="font-bold">Oyuncular: {playerCount}</p>
-        {currentQuestion && (
+        {/* {currentQuestion && (
           <p className="mt-2 font-medium text-blue-600 bg-blue-100 p-2 rounded-md">
             Güncel Soru: {currentQuestion}
           </p>
-        )}
+        )} */}
       </div>
       {!isEnded && (
         <Button
