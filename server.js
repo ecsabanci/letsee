@@ -296,6 +296,14 @@ io.on("connection", (socket) => {
       broadcastActiveGames()
     }
   })
+
+  socket.on("sendEmojiReaction", (reaction) => {
+    const game = games.get(gameCode)
+    if (game) {
+      // Emoji reaksiyonunu odadaki tüm oyunculara ilet
+      io.to(gameCode).emit("emojiReaction", reaction)
+    }
+  })
 })
 
 const PORT = process.env.PORT || 3002

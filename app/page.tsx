@@ -153,7 +153,7 @@ export default function Home() {
 
           {
             !showCreateGameInput && (
-              <div className="flex items-center space-x-2">
+              <div className="flex space-x-2">
                 <input
               type="text"
               value={joinCode}
@@ -163,7 +163,7 @@ export default function Home() {
             />
             <Button
               onClick={joinGame}
-              className="bg-lime-600 hover:bg-lime-700 flex items-center gap-1"
+              className="bg-lime-600 hover:bg-lime-700 flex items-center gap-1 h-auto"
             >
                   Katıl
                   <PlusIcon className="w-4 h-4" />

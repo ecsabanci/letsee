@@ -9,6 +9,8 @@ import { Toaster, toast } from 'react-hot-toast'
 import { useRouter } from "next/navigation"
 import { UserPlusIcon } from "@heroicons/react/24/outline"
 import { Modal } from "@/app/components/ui/modal"
+import { EmojiBar } from "@/app/components/EmojiBar"
+import { FloatingEmoji } from "@/app/components/FloatingEmoji"
 // Socket.IO sunucu URL'ini ortama göre ayarla
 const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3002"
 
@@ -35,6 +37,12 @@ interface JoinRequestApprovedData {
   }
 }
 
+interface EmojiReaction {
+  id: string
+  emoji: string
+  playerName: string
+}
+
 export default function GamePage({ params }: { params: { code: string } }) {
   const searchParams = useSearchParams()
   const isAdmin = searchParams.get("isAdmin") === "true"
@@ -50,6 +58,7 @@ export default function GamePage({ params }: { params: { code: string } }) {
   const [joinRequests, setJoinRequests] = useState<JoinRequest[]>([])
   const router = useRouter()
   const [showJoinRequests, setShowJoinRequests] = useState(false)
+  const [emojiReactions, setEmojiReactions] = useState<EmojiReaction[]>([])
 
   useEffect(() => {
     // Eğer localStorage'da isim varsa, otomatik olarak ayarla
@@ -119,6 +128,14 @@ export default function GamePage({ params }: { params: { code: string } }) {
         setShowAnswers(data.currentGameState.showingAnswers)
         setQuestion(data.currentGameState.question)
       }
+    })
+
+    newSocket.on("emojiReaction", (reaction: EmojiReaction) => {
+      setEmojiReactions(prev => [...prev, reaction])
+      // 2 saniye sonra emojiyi kaldır
+      setTimeout(() => {
+        setEmojiReactions(prev => prev.filter(r => r.id !== reaction.id))
+      }, 2000)
     })
 
     setSocket(newSocket)
@@ -192,6 +209,15 @@ export default function GamePage({ params }: { params: { code: string } }) {
     }
   }
 
+  const handleEmojiClick = (emoji: string) => {
+    const reaction: EmojiReaction = {
+      id: Math.random().toString(36).substring(2),
+      emoji,
+      playerName
+    }
+    socket.emit("sendEmojiReaction", reaction)
+  }
+
   if (!isNameSet && !isAdmin) {
     return (
       <div className="flex min-h-screen items-center justify-center p-4">
@@ -218,19 +244,19 @@ export default function GamePage({ params }: { params: { code: string } }) {
   return (
     <div className="min-h-screen p-4 md:p-8">
       <Toaster />
-      <div className="max-w-4xl mx-auto space-y-8">
-        <div className="bg-gray-800 rounded-lg shadow-lg p-6">
+      <div className="max-w-4xl mx-auto space-y-8 relative">
+        <div className="bg-gray-800 rounded-lg shadow-lg p-6 animate-fade-in">
         {isAdmin && (
             <div className="flex items-center justify-between">
                 <Button
                 onClick={handleEndGame}
-                className="bg-rose-500 hover:bg-rose-600 text-white mb-4"
+                className="bg-rose-500 hover:bg-rose-600 text-white mb-4 animate-bounce-in"
                 >
                 Oyunu Sonlandır
                 </Button>
                 <Button
                 onClick={() => setShowJoinRequests(true)}
-                className="bg-lime-600 hover:bg-lime-700 text-white mb-4 flex items-center gap-2"
+                className="bg-lime-600 hover:bg-lime-700 text-white mb-4 flex items-center gap-2 animate-bounce-in"
                 >
                     <UserPlusIcon className="w-6 h-6" />
                     {joinRequests.length}
@@ -249,9 +275,11 @@ export default function GamePage({ params }: { params: { code: string } }) {
             {players.map((player) => (
               <div
                 key={player.id}
-                className={`px-3 py-1 rounded-full text-sm border-2 ${
+                className={`px-3 py-1 rounded-full text-sm border-2 animate-bounce-in ${
                   player.isReady ? "bg-teal-400" : "bg-gray-800"
-                } ${player.isAdmin ? "border-sky-600" : "border-gray-600"}`}
+                } ${player.isAdmin ? "border-sky-600" : "border-gray-600"} ${
+                  player.isReady ? "animate-pulse-slow" : ""
+                }`}
               >
                 {player.name} {player.isAdmin ? "(Admin)" : ""}
               </div>
@@ -265,7 +293,7 @@ export default function GamePage({ params }: { params: { code: string } }) {
         </div>
 
         {isAdmin && !gameStarted && (
-          <div className="bg-gray-800 rounded-lg shadow-lg p-6 space-y-4">
+          <div className="bg-gray-800 rounded-lg shadow-lg p-6 space-y-4 animate-slide-in">
             <input
               type="text"
               value={question}
@@ -280,7 +308,7 @@ export default function GamePage({ params }: { params: { code: string } }) {
         )}
 
         {gameStarted && !showAnswers && (
-          <div className="bg-gray-800 rounded-lg shadow-lg p-6 space-y-4">
+          <div className="bg-gray-800 rounded-lg shadow-lg p-6 space-y-4 animate-slide-in">
             <div className="font-bold text-lg">{question}</div>
             {!isReady && (
               <>
@@ -299,13 +327,14 @@ export default function GamePage({ params }: { params: { code: string } }) {
         )}
 
         {showAnswers && (
-          <div className="bg-gray-800 rounded-lg shadow-lg p-6 space-y-4">
+          <div className="bg-gray-800 rounded-lg shadow-lg p-6 space-y-4 animate-slide-in">
             <h2 className="text-xl font-bold mb-4">Cevaplar</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {players.map((player) => (
+              {players.map((player, index) => (
                 <div
                   key={player.id}
-                  className="bg-emerald-500 text-black rounded-lg p-4 space-y-2"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                  className="bg-emerald-500 text-black rounded-lg p-4 space-y-2 animate-bounce-in"
                 >
                   <div className="font-bold">{player.name}</div>
                   <div className="text-gray-800">{player.answer}</div>
@@ -362,6 +391,20 @@ export default function GamePage({ params }: { params: { code: string } }) {
             )}
           </div>
         </Modal>
+
+        {/* Emoji Reactions */}
+        <div className="fixed inset-0 pointer-events-none overflow-hidden">
+          {emojiReactions.map((reaction) => (
+            <FloatingEmoji
+              key={reaction.id}
+              emoji={reaction.emoji}
+              playerName={reaction.playerName}
+            />
+          ))}
+        </div>
+
+        {/* Emoji Bar */}
+        {isNameSet && <EmojiBar onEmojiClick={handleEmojiClick} />}
       </div>
     </div>
   )
