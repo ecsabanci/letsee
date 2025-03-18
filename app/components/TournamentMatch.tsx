@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo, memo, useEffect } from 'react'
+import { useState, useMemo, memo, useEffect, useCallback } from 'react'
 import Image from "next/image"
 
 interface TournamentOption {
@@ -20,6 +20,18 @@ interface TournamentMatchProps {
   isWalkover?: boolean // Rakipsiz maç durumu
 }
 
+// Özel karşılaştırma fonksiyonu ekleyelim
+function arePropsEqual(prevProps: TournamentMatchProps, nextProps: TournamentMatchProps) {
+  return (
+    prevProps.option1.id === nextProps.option1.id &&
+    prevProps.option2.id === nextProps.option2.id &&
+    prevProps.showResults === nextProps.showResults &&
+    prevProps.isWalkover === nextProps.isWalkover &&
+    prevProps.className === nextProps.className &&
+    JSON.stringify(prevProps.votes) === JSON.stringify(nextProps.votes)
+  )
+}
+
 export const TournamentMatch = memo(function TournamentMatch({
   option1,
   option2,
@@ -30,6 +42,8 @@ export const TournamentMatch = memo(function TournamentMatch({
   isWalkover = false
 }: TournamentMatchProps) {
   const [selectedOption, setSelectedOption] = useState<string | null>(null)
+
+  console.info('==============> TournamentMatch')
 
   // Güvenlik kontrolü ekleyelim
   if (!option1?.id || !option2?.id) {
@@ -51,27 +65,17 @@ export const TournamentMatch = memo(function TournamentMatch({
     return (votes[option1.id] || 0) + (votes[option2.id] || 0)
   }, [votes, option1.id, option2.id])
   
-  const getVotePercentage = useMemo(() => {
-    return (optionId: string) => {
-      if (totalVotes === 0) return 0
-      const optionVotes = votes[optionId] || 0
-      return Math.round((optionVotes / totalVotes) * 100)
-    }
+  const getVotePercentage = useCallback((optionId: string) => {
+    if (totalVotes === 0) return 0
+    const optionVotes = votes[optionId] || 0
+    return Math.round((optionVotes / totalVotes) * 100)
   }, [totalVotes, votes])
 
-  const handleOptionClick = (optionId: string) => {
+  const handleOptionClick = useCallback((optionId: string) => {
     if (selectedOption || showResults || isWalkover) return
     setSelectedOption(optionId)
     onVote(optionId)
-  }
-
-  const option1VotePercentage = useMemo(() => 
-    showResults ? getVotePercentage(option1.id) : null
-  , [showResults, getVotePercentage, option1.id])
-
-  const option2VotePercentage = useMemo(() => 
-    showResults ? getVotePercentage(option2.id) : null
-  , [showResults, getVotePercentage, option2.id])
+  }, [selectedOption, showResults, isWalkover, onVote])
 
   return (
     <div className={`relative ${className}`}>
@@ -106,13 +110,6 @@ export const TournamentMatch = memo(function TournamentMatch({
               height={400}
               priority
             />
-            {showResults && (
-              <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                <span className="text-6xl font-bold text-white">
-                  {option1VotePercentage}%
-                </span>
-              </div>
-            )}
           </div>
           <h3 className="text-xl font-medium text-center mt-4 text-white">
             {option1.title}
@@ -148,13 +145,6 @@ export const TournamentMatch = memo(function TournamentMatch({
               height={400}
               priority
             />
-            {showResults && (
-              <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                <span className="text-6xl font-bold text-white">
-                  {option2VotePercentage}%
-                </span>
-              </div>
-            )}
           </div>
           <h3 className="text-xl font-medium text-center mt-4 text-white">
             {option2.title}
@@ -163,4 +153,4 @@ export const TournamentMatch = memo(function TournamentMatch({
       </div>
     </div>
   )
-}) 
+}, arePropsEqual) 

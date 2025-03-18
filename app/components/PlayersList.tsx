@@ -11,7 +11,7 @@ interface Player {
 }
 
 interface PlayersListProps {
-  players: Player[]
+  players?: Player[]
   gameStarted: boolean
   readyCount: number
   totalCount: number
@@ -24,11 +24,11 @@ interface PlayersListProps {
 }
 
 export function PlayersList({
-  players,
+  players = [],
   gameStarted,
   readyCount,
   totalCount,
-  isTournament,
+  isTournament = false,
   votingProgress,
   currentPlayerId
 }: PlayersListProps) {

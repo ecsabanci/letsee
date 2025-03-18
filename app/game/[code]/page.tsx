@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback, useRef } from "react"
 import { useSearchParams } from "next/navigation"
 import { Button } from "@/app/components/ui/button"
 import { io } from "socket.io-client"
@@ -17,6 +17,7 @@ import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/outline"
 import { QuestionGenerator } from "@/app/components/QuestionGenerator"
 import { TournamentSetup } from "@/app/components/TournamentSetup"
 import { Tournament } from "@/app/components/Tournament"
+import { TournamentOption } from 'types/tournament'
 
 // Socket.IO sunucu URL'ini ortama göre ayarla
 const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3002"
@@ -73,7 +74,7 @@ export default function GamePage({ params }: { params: { code: string } }) {
   const [gameStarted, setGameStarted] = useState(false)
   const [showAnswers, setShowAnswers] = useState(false)
   const [players, setPlayers] = useState<Player[]>([])
-  const [socket, setSocket] = useState<any>(null)
+  const socketRef = useRef<any>(null)
   const [joinRequests, setJoinRequests] = useState<JoinRequest[]>([])
   const router = useRouter()
   const [showJoinRequests, setShowJoinRequests] = useState(false)
@@ -81,184 +82,221 @@ export default function GamePage({ params }: { params: { code: string } }) {
   const [isTournament, setIsTournament] = useState(false)
   const [tournamentCategory, setTournamentCategory] = useState<TournamentCategory | null>(null)
   const [votingProgress, setVotingProgress] = useState({ voted: 0, total: 0 })
+  const [readyCount, setReadyCount] = useState(0)
+  const [totalCount, setTotalCount] = useState(0)
+  const [category, setCategory] = useState<TournamentOption[]>([])
 
-  // Socket bağlantısını ve event listener'ları bir kere oluştur
+  console.info('==============> GamePage')
+
+  // Socket bağlantısını kur
   useEffect(() => {
-    const newSocket = io(SOCKET_URL, {
+    socketRef.current = io(SOCKET_URL, {
       query: { 
         gameCode: params.code,
         isAdmin: isAdmin.toString()
       },
     })
 
-    const handlePlayerJoined = (players: Player[]) => {
-      setPlayers(players)
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.emit("leaveGame")
+        socketRef.current.disconnect()
+      }
     }
+  }, [params.code, isAdmin])
 
-    const handleGameStarted = (question: string) => {
-      setGameStarted(true)
-      setShowAnswers(false)
-      setQuestion(question)
-      setIsReady(false)
-      setAnswer("")
+  // Event handler'ları useCallback ile optimize et
+  const handlePlayerJoined = useCallback((data: { readyCount: number, totalCount: number, players: Player[] }) => {
+    if (Array.isArray(data.players)) {
+      setPlayers(data.players)
+      setReadyCount(data.readyCount)
+      setTotalCount(data.totalCount)
+    } else if (typeof data === 'object' && Array.isArray(data)) {
+      setPlayers(data)
     }
+  }, [])
 
-    const handlePlayerReady = (players: Player[]) => {
-      setPlayers(players)
-    }
+  const handleGameStarted = useCallback((data: { category: TournamentOption[] }) => {
+    setGameStarted(true)
+    setCategory(data.category)
+    setIsTournament(true)
+  }, [])
 
-    const handleAnswersRevealed = (players: Player[]) => {
-      setPlayers(players)
-      setShowAnswers(true)
-    }
+  const handlePlayerReady = useCallback((players: Player[]) => {
+    setPlayers(players)
+  }, [])
 
-    const handleRoundEnded = (players: Player[]) => {
-      setPlayers(players)
-      setIsReady(false)
-      setAnswer("")
-      setGameStarted(false)
-      setShowAnswers(false)
-      setQuestion("")
-    }
+  const handleAnswersRevealed = useCallback((players: Player[]) => {
+    setPlayers(players)
+    setShowAnswers(true)
+  }, [])
 
-    const handleJoinRequest = (data: any) => {
-      setJoinRequests(data.requests)
-      if (isAdmin) {
-        toast.custom((t) => (
-          <div className={`${
-            t.visible ? 'animate-enter' : 'animate-leave'
-          } max-w-md w-full bg-white shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}>
-            <div className="flex-1 w-0 p-4">
-              <div className="flex items-start">
-                <div className="ml-3 flex-1">
-                  <p className="text-sm font-medium text-gray-900">
-                    Yeni Katılma İsteği
-                  </p>
-                  <p className="mt-1 text-sm text-gray-500">
-                    {data.requests[data.requests.length - 1]?.name} oyuna katılmak istiyor
-                  </p>
-                </div>
+  const handleRoundEnded = useCallback((players: Player[]) => {
+    setPlayers(players)
+    setIsReady(false)
+    setAnswer("")
+    setGameStarted(false)
+    setShowAnswers(false)
+    setQuestion("")
+  }, [])
+
+  const handleJoinRequest = useCallback((data: any) => {
+    setJoinRequests(data.requests)
+    if (isAdmin) {
+      toast.custom((t) => (
+        <div className={`${
+          t.visible ? 'animate-enter' : 'animate-leave'
+        } max-w-md w-full bg-white shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}>
+          <div className="flex-1 w-0 p-4">
+            <div className="flex items-start">
+              <div className="ml-3 flex-1">
+                <p className="text-sm font-medium text-gray-900">
+                  Yeni Katılma İsteği
+                </p>
+                <p className="mt-1 text-sm text-gray-500">
+                  {data.requests[data.requests.length - 1]?.name} oyuna katılmak istiyor
+                </p>
               </div>
             </div>
-            <div className="flex border-l border-gray-200">
-              <button
-                onClick={() => toast.dismiss(t.id)}
-                className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none"
-              >
-                Kapat
-              </button>
-            </div>
           </div>
-        ), {
-          duration: 4000,
-          position: 'top-right',
+          <div className="flex border-l border-gray-200">
+            <button
+              onClick={() => toast.dismiss(t.id)}
+              className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none"
+            >
+              Kapat
+            </button>
+          </div>
+        </div>
+      ), {
+        duration: 4000,
+        position: 'top-right',
+      })
+    }
+  }, [isAdmin])
+
+  const handleGameEnded = useCallback(() => {
+    router.push("/")
+  }, [router])
+
+  const handleJoinRequestApproved = useCallback((data: JoinRequestApprovedData) => {
+    if (data.currentGameState) {
+      const { isStarted, showingAnswers, question, isTournament, tournamentCategory } = data.currentGameState
+      
+      if (isTournament && tournamentCategory) {
+        setTournamentCategory(tournamentCategory)
+        setIsTournament(true)
+      }
+      setGameStarted(isStarted)
+      setShowAnswers(showingAnswers)
+      setQuestion(question)
+      
+      if (isTournament && tournamentCategory) {
+        socketRef.current?.emit("requestTournamentMatches", {
+          gameCode: params.code,
+          category: tournamentCategory
         })
       }
     }
+  }, [params.code])
 
-    const handleGameEnded = () => {
-      router.push("/")
-    }
+  const handleEmojiReaction = useCallback((reaction: EmojiReaction) => {
+    setEmojiReactions(prev => [...prev, reaction])
+    setTimeout(() => {
+      setEmojiReactions(prev => prev.filter(r => r.id !== reaction.id))
+    }, 2000)
+  }, [])
 
-    const handleJoinRequestApproved = (data: JoinRequestApprovedData) => {
-      if (data.currentGameState) {
-        const { isStarted, showingAnswers, question, isTournament, tournamentCategory } = data.currentGameState
-        
-        if (isTournament && tournamentCategory) {
-          setTournamentCategory(tournamentCategory)
-          setIsTournament(true)
-        }
-        setGameStarted(isStarted)
-        setShowAnswers(showingAnswers)
-        setQuestion(question)
-        
-        if (isTournament && tournamentCategory) {
-          newSocket.emit("requestTournamentMatches", {
-            gameCode: data.gameCode,
-            category: tournamentCategory
-          })
-        }
-      }
-    }
+  const handleTournamentStarted = useCallback((category: TournamentCategory) => {
+    setTournamentCategory(category)
+    setIsTournament(true)
+    setGameStarted(true)
+  }, [])
 
-    const handleEmojiReaction = (reaction: EmojiReaction) => {
-      setEmojiReactions(prev => [...prev, reaction])
-      setTimeout(() => {
-        setEmojiReactions(prev => prev.filter(r => r.id !== reaction.id))
-      }, 2000)
-    }
+  const handleTournamentEnded = useCallback(() => {
+    setTimeout(() => {
+      setIsTournament(false)
+      setGameStarted(false)
+      setTournamentCategory(null)
+    }, 5000)
+  }, [])
 
-    const handleTournamentStarted = (category: TournamentCategory) => {
-      setTournamentCategory(category)
-      setIsTournament(true)
-      setGameStarted(true)
-    }
+  const handleTournamentVote = useCallback(({ votedPlayerCount, totalPlayerCount }: any) => {
+    setVotingProgress({ voted: votedPlayerCount, total: totalPlayerCount })
+  }, [])
 
-    const handleTournamentEnded = () => {
-      setTimeout(() => {
-        setIsTournament(false)
-        setGameStarted(false)
-        setTournamentCategory(null)
-      }, 5000)
-    }
+  // Socket event'lerini bağla
+  useEffect(() => {
+    if (!socketRef.current) return
 
-    const handleTournamentVote = ({ votedPlayerCount, totalPlayerCount }: any) => {
-      setVotingProgress({ voted: votedPlayerCount, total: totalPlayerCount })
-    }
+    // Bağlantı kurulduğunda mevcut oyuncuları iste
+    socketRef.current.emit('requestPlayers', { gameCode: params.code })
 
-    newSocket.on("playerJoined", handlePlayerJoined)
-    newSocket.on("gameStarted", handleGameStarted)
-    newSocket.on("playerReady", handlePlayerReady)
-    newSocket.on("answersRevealed", handleAnswersRevealed)
-    newSocket.on("roundEnded", handleRoundEnded)
-    newSocket.on("joinRequest", handleJoinRequest)
-    newSocket.on("gameEnded", handleGameEnded)
-    newSocket.on("joinRequestApproved", handleJoinRequestApproved)
-    newSocket.on("emojiReaction", handleEmojiReaction)
-    newSocket.on("tournamentStarted", handleTournamentStarted)
-    newSocket.on("tournamentEnded", handleTournamentEnded)
-    newSocket.on("tournamentVote", handleTournamentVote)
-
-    setSocket(newSocket)
+    socketRef.current.on("playerJoined", handlePlayerJoined)
+    socketRef.current.on("playersUpdate", handlePlayerJoined)
+    socketRef.current.on("gameStarted", handleGameStarted)
+    socketRef.current.on("playerReady", handlePlayerReady)
+    socketRef.current.on("answersRevealed", handleAnswersRevealed)
+    socketRef.current.on("roundEnded", handleRoundEnded)
+    socketRef.current.on("joinRequest", handleJoinRequest)
+    socketRef.current.on("gameEnded", handleGameEnded)
+    socketRef.current.on("joinRequestApproved", handleJoinRequestApproved)
+    socketRef.current.on("emojiReaction", handleEmojiReaction)
+    socketRef.current.on("tournamentStarted", handleTournamentStarted)
+    socketRef.current.on("tournamentEnded", handleTournamentEnded)
+    socketRef.current.on("tournamentVote", handleTournamentVote)
 
     return () => {
-      if (newSocket) {
-        newSocket.emit("leaveGame")
-        newSocket.off("playerJoined", handlePlayerJoined)
-        newSocket.off("gameStarted", handleGameStarted)
-        newSocket.off("playerReady", handlePlayerReady)
-        newSocket.off("answersRevealed", handleAnswersRevealed)
-        newSocket.off("roundEnded", handleRoundEnded)
-        newSocket.off("joinRequest", handleJoinRequest)
-        newSocket.off("gameEnded", handleGameEnded)
-        newSocket.off("joinRequestApproved", handleJoinRequestApproved)
-        newSocket.off("emojiReaction", handleEmojiReaction)
-        newSocket.off("tournamentStarted", handleTournamentStarted)
-        newSocket.off("tournamentEnded", handleTournamentEnded)
-        newSocket.off("tournamentVote", handleTournamentVote)
-        newSocket.close()
+      if (socketRef.current) {
+        socketRef.current.off("playerJoined", handlePlayerJoined)
+        socketRef.current.off("playersUpdate", handlePlayerJoined)
+        socketRef.current.off("gameStarted", handleGameStarted)
+        socketRef.current.off("playerReady", handlePlayerReady)
+        socketRef.current.off("answersRevealed", handleAnswersRevealed)
+        socketRef.current.off("roundEnded", handleRoundEnded)
+        socketRef.current.off("joinRequest", handleJoinRequest)
+        socketRef.current.off("gameEnded", handleGameEnded)
+        socketRef.current.off("joinRequestApproved", handleJoinRequestApproved)
+        socketRef.current.off("emojiReaction", handleEmojiReaction)
+        socketRef.current.off("tournamentStarted", handleTournamentStarted)
+        socketRef.current.off("tournamentEnded", handleTournamentEnded)
+        socketRef.current.off("tournamentVote", handleTournamentVote)
       }
     }
-  }, [params.code, isAdmin, router])
+  }, [
+    params.code,
+    handlePlayerJoined,
+    handleGameStarted,
+    handlePlayerReady,
+    handleAnswersRevealed,
+    handleRoundEnded,
+    handleJoinRequest,
+    handleGameEnded,
+    handleJoinRequestApproved,
+    handleEmojiReaction,
+    handleTournamentStarted,
+    handleTournamentEnded,
+    handleTournamentVote
+  ])
 
   // İsim kaydetme effect'ini ayrı tut ve sadece gerekli dependency'leri ekle
   useEffect(() => {
     const savedName = localStorage.getItem("playerName")
-    if (savedName && isAdmin && socket) {
+    if (savedName && isAdmin && socketRef.current) {
       setPlayerName(savedName)
       setIsNameSet(true)
-      socket.emit("setName", savedName)
+      socketRef.current.emit("setName", savedName)
     }
-  }, [isAdmin, socket])
+  }, [isAdmin])
 
   const handleSetName = () => {
     if (playerName.trim()) {
       localStorage.setItem("playerName", playerName)
-      socket.emit("setName", playerName)
+      socketRef.current?.emit("setName", playerName)
       setIsNameSet(true)
       
       // İsim ayarlandıktan sonra oyun durumunu kontrol et
-      socket.once("joinRequestApproved", (data: JoinRequestApprovedData) => {
+      socketRef.current?.once("joinRequestApproved", (data: JoinRequestApprovedData) => {
         if (data.currentGameState) {
           const { isStarted, showingAnswers, question, isTournament, tournamentCategory } = data.currentGameState
           
@@ -274,7 +312,7 @@ export default function GamePage({ params }: { params: { code: string } }) {
             
             // Turnuva durumunu güncelle
             if (isTournament && tournamentCategory) {
-              socket.emit("requestTournamentMatches", {
+              socketRef.current?.emit("requestTournamentMatches", {
                 gameCode: params.code,
                 category: tournamentCategory
               })
@@ -287,19 +325,19 @@ export default function GamePage({ params }: { params: { code: string } }) {
 
   const handleStartGame = () => {
     if (question.trim()) {
-      socket.emit("startGame", question)
+      socketRef.current?.emit("startGame", question)
     }
   }
 
   const handleSubmitAnswer = () => {
     if (answer.trim()) {
-      socket.emit("submitAnswer", answer)
+      socketRef.current?.emit("submitAnswer", answer)
       setIsReady(true)
     }
   }
 
   const handleStartNewRound = () => {
-    socket.emit("startNewRound")
+    socketRef.current?.emit("startNewRound")
   }
 
   const handleCopyCode = async () => {
@@ -315,7 +353,7 @@ export default function GamePage({ params }: { params: { code: string } }) {
   }
 
   const handleApproveRequest = (playerId: string) => {
-    socket.emit("approveJoinRequest", {
+    socketRef.current?.emit("approveJoinRequest", {
       gameCode: params.code,
       playerId
     })
@@ -323,7 +361,7 @@ export default function GamePage({ params }: { params: { code: string } }) {
   }
 
   const handleRejectRequest = (playerId: string) => {
-    socket.emit("rejectJoinRequest", {
+    socketRef.current?.emit("rejectJoinRequest", {
       gameCode: params.code,
       playerId
     })
@@ -331,8 +369,8 @@ export default function GamePage({ params }: { params: { code: string } }) {
   }
 
   const handleEndGame = () => {
-    if (socket) {
-      socket.emit("endGame")
+    if (socketRef.current) {
+      socketRef.current.emit("endGame")
       router.push("/")
     }
   }
@@ -343,12 +381,12 @@ export default function GamePage({ params }: { params: { code: string } }) {
       emoji,
       playerName
     }
-    socket.emit("sendEmojiReaction", reaction)
+    socketRef.current?.emit("sendEmojiReaction", reaction)
   }
 
   const handleStartTournament = (category: TournamentCategory) => {
-    if (socket) {
-      socket.emit("startTournament", {
+    if (socketRef.current) {
+      socketRef.current.emit("startTournament", {
         gameCode: params.code,
         category
       })
@@ -356,8 +394,8 @@ export default function GamePage({ params }: { params: { code: string } }) {
   }
 
   const handleTournamentEnd = (winner: any) => {
-    if (socket) {
-      socket.emit("endTournament", {
+    if (socketRef.current) {
+      socketRef.current.emit("endTournament", {
         gameCode: params.code,
         winner
       })
@@ -383,9 +421,6 @@ export default function GamePage({ params }: { params: { code: string } }) {
     )
   }
 
-  const readyPlayerCount = players.filter(p => p.isReady).length
-  const totalPlayerCount = players.length
-
   return (
     <div className="min-h-screen p-4 md:p-8">
       <Toaster />
@@ -402,10 +437,11 @@ export default function GamePage({ params }: { params: { code: string } }) {
           <PlayersList
             players={players}
             gameStarted={gameStarted}
-            readyCount={readyPlayerCount}
-            totalCount={totalPlayerCount}
+            readyCount={readyCount}
+            totalCount={totalCount}
             isTournament={isTournament}
             votingProgress={votingProgress}
+            currentPlayerId={socketRef.current?.id}
           />
         </div>
 
@@ -449,7 +485,7 @@ export default function GamePage({ params }: { params: { code: string } }) {
           <Tournament
             category={tournamentCategory}
             onTournamentEnd={handleTournamentEnd}
-            socket={socket}
+            socket={socketRef.current}
             gameCode={params.code}
           />
         )}
