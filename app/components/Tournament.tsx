@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useMemo, useCallback, useRef } from "react"
+import { useState, useEffect, useMemo, useCallback, useRef, memo } from "react"
 import { TournamentMatch } from "./TournamentMatch"
 import { TournamentWinner } from "./TournamentWinner"
 import { Socket } from "socket.io-client"
@@ -62,7 +62,7 @@ interface ChatMessageProps {
   message: ChatMessage
 }
 
-function ChatMessageItem({ message }: ChatMessageProps) {
+const ChatMessageItem = memo(function ChatMessageItem({ message }: ChatMessageProps) {
   const [isExpanded, setIsExpanded] = useState(false)
   const shouldShowExpandButton = message.message.length > 50
 
@@ -91,9 +91,17 @@ function ChatMessageItem({ message }: ChatMessageProps) {
       </div>
     </div>
   )
+})
+
+function arePropsEqual(prevProps: TournamentProps, nextProps: TournamentProps) {
+  return (
+    prevProps.category.id === nextProps.category.id &&
+    prevProps.gameCode === nextProps.gameCode &&
+    prevProps.socket?.id === nextProps.socket?.id
+  )
 }
 
-export function Tournament({ category, onTournamentEnd, socket, gameCode }: TournamentProps) {
+export const Tournament = memo(function Tournament({ category, onTournamentEnd, socket, gameCode }: TournamentProps) {
   const [currentMatch, setCurrentMatch] = useState<Match | null>(null)
   const [currentRound, setCurrentRound] = useState(1)
   const [winners, setWinners] = useState<TournamentOption[]>([])
@@ -114,6 +122,11 @@ export function Tournament({ category, onTournamentEnd, socket, gameCode }: Tour
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
   const chatContainerRef = useRef<HTMLDivElement>(null)
 
+  // Chat mesajı alma handler'ı
+  const handleChatMessage = useCallback((message: ChatMessage) => {
+    setChatMessages(prev => [...prev, message])
+  }, [])
+
   // Yeni katılan oyuncu kontrolü
   const isNewPlayer = useMemo(() => {
     if (!currentMatch || !currentMatch.votedPlayers || !socket?.id) return false
@@ -121,7 +134,7 @@ export function Tournament({ category, onTournamentEnd, socket, gameCode }: Tour
       currentMatch.votedPlayers : 
       Object.values(currentMatch.votedPlayers || {})
     return !votedPlayers.includes(socket.id)
-  }, [currentMatch, socket])
+  }, [currentMatch?.votedPlayers, socket?.id])
 
   const handleVote = useCallback((matchId: string, winnerId: string) => {
     if (!socket || !currentMatch) return
@@ -146,6 +159,79 @@ export function Tournament({ category, onTournamentEnd, socket, gameCode }: Tour
     }
   }, [showTieModal, timeLeft])
 
+  // Event handler'ları useCallback ile optimize et
+  const handleTournamentStart = useCallback((data: { 
+    category: TournamentCategory,
+    totalRounds: number,
+    totalParticipants: number
+  }) => {
+    setTotalRounds(data.totalRounds)
+    setTotalParticipants(data.totalParticipants)
+  }, [])
+
+  const handleTournamentMatches = useCallback((data: { 
+    match: Match, 
+    round: number,
+    winners: TournamentOption[],
+    totalRounds: number,
+    remainingMatches: number
+  }) => {
+    setCurrentMatch(data.match)
+    setCurrentRound(data.round)
+    setWinners(data.winners)
+    setShowingResults(false)
+    setVotingProgress({ voted: 0, total: 0 })
+    setTotalRounds(data.totalRounds)
+    setRemainingMatches(data.remainingMatches)
+  }, [])
+
+  const handleTournamentEnd = useCallback((winner: TournamentOption) => {
+    setTournamentWinner(winner)
+    setTimeout(() => {
+      onTournamentEnd(winner)
+    }, 5000)
+  }, [onTournamentEnd])
+
+  const handleTournamentTie = useCallback((data: {
+    option1: TournamentOption
+    option2: TournamentOption
+    votes: { [key: string]: number }
+  }) => {
+    setTieOptions({ option1: data.option1, option2: data.option2 })
+    setShowTieModal(true)
+    setTimeLeft(60)
+  }, [])
+
+  const handleTournamentTieEnd = useCallback((data: {
+    match: Match
+    round: number
+    winners: TournamentOption[]
+    totalRounds: number
+    remainingMatches: number
+  }) => {
+    setShowTieModal(false)
+    setTieOptions(null)
+    setCurrentMatch(data.match)
+    setShowingResults(false)
+    setVotingProgress({ voted: 0, total: 0 })
+    setChatMessages([])
+  }, [])
+
+  const handleTournamentVote = useCallback(({ matchId, optionId, votes, votedPlayers, votedPlayerCount, totalPlayerCount }: any) => {
+    if (currentMatch?.id === matchId) {
+      setCurrentMatch(prev => prev ? {
+        ...prev,
+        votes: votes,
+        votedPlayers: votedPlayers || []
+      } : null)
+      setVotingProgress({ voted: votedPlayerCount, total: totalPlayerCount })
+      if (votedPlayerCount === totalPlayerCount) {
+        setShowingResults(true)
+      }
+    }
+  }, [currentMatch?.id])
+
+  // Socket event'lerini bağla
   useEffect(() => {
     if (!socket) return
 
@@ -154,68 +240,12 @@ export function Tournament({ category, onTournamentEnd, socket, gameCode }: Tour
       category
     })
 
-    const handleTournamentStart = (data: { 
-      category: TournamentCategory,
-      totalRounds: number,
-      totalParticipants: number
-    }) => {
-      setTotalRounds(data.totalRounds)
-      setTotalParticipants(data.totalParticipants)
-    }
-
-    const handleTournamentMatches = (data: { 
-      match: Match, 
-      round: number,
-      winners: TournamentOption[],
-      totalRounds: number,
-      remainingMatches: number
-    }) => {
-      setCurrentMatch(data.match)
-      setCurrentRound(data.round)
-      setWinners(data.winners)
-      setShowingResults(false)
-      setVotingProgress({ voted: 0, total: 0 })
-      setTotalRounds(data.totalRounds)
-      setRemainingMatches(data.remainingMatches)
-    }
-
-    const handleTournamentEnd = (winner: TournamentOption) => {
-      setTournamentWinner(winner)
-      setTimeout(() => {
-        onTournamentEnd(winner)
-      }, 5000)
-    }
-
-    const handleTournamentTie = (data: {
-      option1: TournamentOption
-      option2: TournamentOption
-      votes: { [key: string]: number }
-    }) => {
-      setTieOptions({ option1: data.option1, option2: data.option2 })
-      setShowTieModal(true)
-      setTimeLeft(60)
-    }
-
-    const handleTournamentTieEnd = (data: {
-      match: Match
-      round: number
-      winners: TournamentOption[]
-      totalRounds: number
-      remainingMatches: number
-    }) => {
-      setShowTieModal(false)
-      setTieOptions(null)
-      setCurrentMatch(data.match)
-      setShowingResults(false)
-      setVotingProgress({ voted: 0, total: 0 })
-      setChatMessages([])
-    }
-
     socket.on("tournamentStarted", handleTournamentStart)
     socket.on("tournamentMatches", handleTournamentMatches)
     socket.on("tournamentEnded", handleTournamentEnd)
     socket.on("tournamentTie", handleTournamentTie)
     socket.on("tournamentTieEnd", handleTournamentTieEnd)
+    socket.on("tournamentVote", handleTournamentVote)
 
     return () => {
       socket.off("tournamentStarted", handleTournamentStart)
@@ -223,8 +253,19 @@ export function Tournament({ category, onTournamentEnd, socket, gameCode }: Tour
       socket.off("tournamentEnded", handleTournamentEnd)
       socket.off("tournamentTie", handleTournamentTie)
       socket.off("tournamentTieEnd", handleTournamentTieEnd)
+      socket.off("tournamentVote", handleTournamentVote)
     }
-  }, [socket, category, gameCode])
+  }, [
+    socket,
+    category,
+    gameCode,
+    handleTournamentStart,
+    handleTournamentMatches,
+    handleTournamentEnd,
+    handleTournamentTie,
+    handleTournamentTieEnd,
+    handleTournamentVote
+  ])
 
   const handleEndTie = useCallback(() => {
     if (socket && isAdmin) {
@@ -232,31 +273,6 @@ export function Tournament({ category, onTournamentEnd, socket, gameCode }: Tour
       setChatMessages([])
     }
   }, [socket, gameCode, isAdmin])
-
-  // Socket olaylarını dinle
-  useEffect(() => {
-    if (!socket) return
-
-    const handleTournamentVote = ({ matchId, optionId, votes, votedPlayers, votedPlayerCount, totalPlayerCount }: any) => {
-      if (currentMatch?.id === matchId) {
-        setCurrentMatch(prev => prev ? {
-          ...prev,
-          votes: votes,
-          votedPlayers: votedPlayers || []
-        } : null)
-        setVotingProgress({ voted: votedPlayerCount, total: totalPlayerCount })
-        if (votedPlayerCount === totalPlayerCount) {
-          setShowingResults(true)
-        }
-      }
-    }
-
-    socket.on("tournamentVote", handleTournamentVote)
-
-    return () => {
-      socket.off("tournamentVote", handleTournamentVote)
-    }
-  }, [socket, currentMatch])
 
   // Yeni chat mesajı geldiğinde otomatik scroll
   useEffect(() => {
@@ -266,29 +282,14 @@ export function Tournament({ category, onTournamentEnd, socket, gameCode }: Tour
   }, [chatMessages])
 
   // Chat mesajı gönderme fonksiyonu
-  const handleSendMessage = (message: string) => {
+  const handleSendMessage = useCallback((message: string) => {
     if (!socket || !message.trim()) return
 
     socket.emit("tournamentChatMessage", {
       gameCode,
       message: message.trim()
     })
-  }
-
-  useEffect(() => {
-    if (!socket) return
-
-    // Chat mesajı alma
-    const handleChatMessage = (message: ChatMessage) => {
-      setChatMessages(prev => [...prev, message])
-    }
-
-    socket.on("tournamentChatMessage", handleChatMessage)
-
-    return () => {
-      socket.off("tournamentChatMessage", handleChatMessage)
-    }
-  }, [socket])
+  }, [socket, gameCode])
 
   // Oyuncuları güncelleme
   useEffect(() => {
@@ -338,15 +339,6 @@ export function Tournament({ category, onTournamentEnd, socket, gameCode }: Tour
     <div className="space-y-8">
       <div className="text-center">
         <div className="text-gray-400 space-y-1">
-          <PlayersList
-            players={players}
-            gameStarted={true}
-            readyCount={votingProgress.voted}
-            totalCount={votingProgress.total}
-            isTournament={true}
-            votingProgress={votingProgress}
-            currentPlayerId={socket?.id}
-          />
           <p>
             Kalan Eşleşme: {remainingMatches + 1}
           </p>
@@ -375,8 +367,8 @@ export function Tournament({ category, onTournamentEnd, socket, gameCode }: Tour
         onClose={() => {}}
       >
         <div className="space-y-2 max-h-[100vh] overflow-y-auto">
-          <div className="bg-yellow-500/20 rounded-lg p-3">
-            <p className="text-yellow-400 font-semibold">
+          <div className="bg-yellow-500 rounded-lg p-3">
+            <p className="font-semibold">
               ⚠️ Oylar eşit çıktı! ({tieOptions?.option1.title} - {tieOptions?.option2.title})
             </p>
           </div>
@@ -398,7 +390,7 @@ export function Tournament({ category, onTournamentEnd, socket, gameCode }: Tour
             {chatMessages.length === 0 && (
               <div className="h-full flex items-center justify-center">
                 <p className="text-gray-500 text-center text-lg">
-                  Henüz mesaj yok. İlk mesajı siz gönderin!
+                  Şimdi tartışmaya başlayın!
                 </p>
               </div>
             )}
@@ -426,9 +418,9 @@ export function Tournament({ category, onTournamentEnd, socket, gameCode }: Tour
                   textarea.value = ''
                 }
               }}
-              className="bg-sky-600 hover:bg-sky-700 text-white rounded-full p-2"
+              className="bg-sky-600 hover:bg-sky-700 text-white rounded-full p-2 flex items-center justify-center gap-2"
             >
-              <PaperAirplaneIcon className="w-6 h-6" />
+              <PaperAirplaneIcon className="w-4 h-4" />
             </Button>
           </div>
 
@@ -445,4 +437,4 @@ export function Tournament({ category, onTournamentEnd, socket, gameCode }: Tour
       </Modal>
     </div>
   )
-} 
+}, arePropsEqual) 
