@@ -15,6 +15,9 @@ import { QuestionAnswerForm } from "@/app/components/QuestionAnswerForm"
 import { AnswersCard } from "@/app/components/AnswersCard"
 import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/outline"
 import { QuestionGenerator } from "@/app/components/QuestionGenerator"
+import { TournamentSetup } from "@/app/components/TournamentSetup"
+import { Tournament } from "@/app/components/Tournament"
+
 // Socket.IO sunucu URL'ini ortama göre ayarla
 const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3002"
 
@@ -38,6 +41,8 @@ interface JoinRequestApprovedData {
     question: string
     isStarted: boolean
     showingAnswers: boolean
+    isTournament: boolean
+    tournamentCategory?: TournamentCategory
   }
 }
 
@@ -45,6 +50,16 @@ interface EmojiReaction {
   id: string
   emoji: string
   playerName: string
+}
+
+interface TournamentCategory {
+  id: string
+  name: string
+  options: Array<{
+    id: string
+    title: string
+    imageUrl: string
+  }>
 }
 
 export default function GamePage({ params }: { params: { code: string } }) {
@@ -63,21 +78,11 @@ export default function GamePage({ params }: { params: { code: string } }) {
   const router = useRouter()
   const [showJoinRequests, setShowJoinRequests] = useState(false)
   const [emojiReactions, setEmojiReactions] = useState<EmojiReaction[]>([])
+  const [isTournament, setIsTournament] = useState(false)
+  const [tournamentCategory, setTournamentCategory] = useState<TournamentCategory | null>(null)
+  const [votingProgress, setVotingProgress] = useState({ voted: 0, total: 0 })
 
-  useEffect(() => {
-    // Eğer localStorage'da isim varsa, otomatik olarak ayarla
-    const savedName = localStorage.getItem("playerName")
-    if (savedName) {
-      setPlayerName(savedName)
-      if (isAdmin) {
-        setIsNameSet(true)
-        if (socket) {
-          socket.emit("setName", savedName)
-        }
-      }
-    }
-  }, [isAdmin, socket])
-
+  // Socket bağlantısını ve event listener'ları bir kere oluştur
   useEffect(() => {
     const newSocket = io(SOCKET_URL, {
       query: { 
@@ -86,41 +91,39 @@ export default function GamePage({ params }: { params: { code: string } }) {
       },
     })
 
-    newSocket.on("playerJoined", (players: Player[]) => {
+    const handlePlayerJoined = (players: Player[]) => {
       setPlayers(players)
-    })
+    }
 
-    newSocket.on("gameStarted", (question: string) => {
+    const handleGameStarted = (question: string) => {
       setGameStarted(true)
       setShowAnswers(false)
       setQuestion(question)
       setIsReady(false)
       setAnswer("")
-    })
+    }
 
-    newSocket.on("playerReady", (players: Player[]) => {
+    const handlePlayerReady = (players: Player[]) => {
       setPlayers(players)
-    })
+    }
 
-    newSocket.on("answersRevealed", (players: Player[]) => {
+    const handleAnswersRevealed = (players: Player[]) => {
       setPlayers(players)
       setShowAnswers(true)
-    })
+    }
 
-    newSocket.on("roundEnded", (players: Player[]) => {
+    const handleRoundEnded = (players: Player[]) => {
       setPlayers(players)
       setIsReady(false)
       setAnswer("")
       setGameStarted(false)
       setShowAnswers(false)
       setQuestion("")
-    })
+    }
 
-    newSocket.on("joinRequest", (data) => {
+    const handleJoinRequest = (data: any) => {
       setJoinRequests(data.requests)
-      // Admin için ses bildirimi çal
       if (isAdmin) {
-        // Ayrıca toast bildirimi göster
         toast.custom((t) => (
           <div className={`${
             t.visible ? 'animate-enter' : 'animate-leave'
@@ -151,46 +154,134 @@ export default function GamePage({ params }: { params: { code: string } }) {
           position: 'top-right',
         })
       }
-    })
+    }
 
-    newSocket.on("gameEnded", () => {
+    const handleGameEnded = () => {
       router.push("/")
-    })
+    }
 
-    // Yeni katılan oyuncu için mevcut oyun durumunu ayarla
-    newSocket.on("joinRequestApproved", (data: JoinRequestApprovedData) => {
-      console.log("Join request approved with data:", data) // Debug için
+    const handleJoinRequestApproved = (data: JoinRequestApprovedData) => {
       if (data.currentGameState) {
-        setGameStarted(data.currentGameState.isStarted)
-        setShowAnswers(data.currentGameState.showingAnswers)
-        setQuestion(data.currentGameState.question)
+        const { isStarted, showingAnswers, question, isTournament, tournamentCategory } = data.currentGameState
+        
+        if (isTournament && tournamentCategory) {
+          setTournamentCategory(tournamentCategory)
+          setIsTournament(true)
+        }
+        setGameStarted(isStarted)
+        setShowAnswers(showingAnswers)
+        setQuestion(question)
+        
+        if (isTournament && tournamentCategory) {
+          newSocket.emit("requestTournamentMatches", {
+            gameCode: data.gameCode,
+            category: tournamentCategory
+          })
+        }
       }
-    })
+    }
 
-    newSocket.on("emojiReaction", (reaction: EmojiReaction) => {
+    const handleEmojiReaction = (reaction: EmojiReaction) => {
       setEmojiReactions(prev => [...prev, reaction])
-      // 2 saniye sonra emojiyi kaldır
       setTimeout(() => {
         setEmojiReactions(prev => prev.filter(r => r.id !== reaction.id))
       }, 2000)
-    })
+    }
+
+    const handleTournamentStarted = (category: TournamentCategory) => {
+      setTournamentCategory(category)
+      setIsTournament(true)
+      setGameStarted(true)
+    }
+
+    const handleTournamentEnded = () => {
+      setTimeout(() => {
+        setIsTournament(false)
+        setGameStarted(false)
+        setTournamentCategory(null)
+      }, 5000)
+    }
+
+    const handleTournamentVote = ({ votedPlayerCount, totalPlayerCount }: any) => {
+      setVotingProgress({ voted: votedPlayerCount, total: totalPlayerCount })
+    }
+
+    newSocket.on("playerJoined", handlePlayerJoined)
+    newSocket.on("gameStarted", handleGameStarted)
+    newSocket.on("playerReady", handlePlayerReady)
+    newSocket.on("answersRevealed", handleAnswersRevealed)
+    newSocket.on("roundEnded", handleRoundEnded)
+    newSocket.on("joinRequest", handleJoinRequest)
+    newSocket.on("gameEnded", handleGameEnded)
+    newSocket.on("joinRequestApproved", handleJoinRequestApproved)
+    newSocket.on("emojiReaction", handleEmojiReaction)
+    newSocket.on("tournamentStarted", handleTournamentStarted)
+    newSocket.on("tournamentEnded", handleTournamentEnded)
+    newSocket.on("tournamentVote", handleTournamentVote)
 
     setSocket(newSocket)
 
-    // Oyundan çıkıldığında temizlik yap
     return () => {
       if (newSocket) {
         newSocket.emit("leaveGame")
+        newSocket.off("playerJoined", handlePlayerJoined)
+        newSocket.off("gameStarted", handleGameStarted)
+        newSocket.off("playerReady", handlePlayerReady)
+        newSocket.off("answersRevealed", handleAnswersRevealed)
+        newSocket.off("roundEnded", handleRoundEnded)
+        newSocket.off("joinRequest", handleJoinRequest)
+        newSocket.off("gameEnded", handleGameEnded)
+        newSocket.off("joinRequestApproved", handleJoinRequestApproved)
+        newSocket.off("emojiReaction", handleEmojiReaction)
+        newSocket.off("tournamentStarted", handleTournamentStarted)
+        newSocket.off("tournamentEnded", handleTournamentEnded)
+        newSocket.off("tournamentVote", handleTournamentVote)
         newSocket.close()
       }
     }
-  }, [params.code, isAdmin])
+  }, [params.code, isAdmin, router])
+
+  // İsim kaydetme effect'ini ayrı tut ve sadece gerekli dependency'leri ekle
+  useEffect(() => {
+    const savedName = localStorage.getItem("playerName")
+    if (savedName && isAdmin && socket) {
+      setPlayerName(savedName)
+      setIsNameSet(true)
+      socket.emit("setName", savedName)
+    }
+  }, [isAdmin, socket])
 
   const handleSetName = () => {
     if (playerName.trim()) {
-      localStorage.setItem("playerName", playerName) // İsmi kaydet
+      localStorage.setItem("playerName", playerName)
       socket.emit("setName", playerName)
       setIsNameSet(true)
+      
+      // İsim ayarlandıktan sonra oyun durumunu kontrol et
+      socket.once("joinRequestApproved", (data: JoinRequestApprovedData) => {
+        if (data.currentGameState) {
+          const { isStarted, showingAnswers, question, isTournament, tournamentCategory } = data.currentGameState
+          
+          // State'leri tek bir batch'te güncelle
+          Promise.resolve().then(() => {
+            if (isTournament && tournamentCategory) {
+              setTournamentCategory(tournamentCategory)
+              setIsTournament(true)
+            }
+            setGameStarted(isStarted)
+            setShowAnswers(showingAnswers)
+            setQuestion(question)
+            
+            // Turnuva durumunu güncelle
+            if (isTournament && tournamentCategory) {
+              socket.emit("requestTournamentMatches", {
+                gameCode: params.code,
+                category: tournamentCategory
+              })
+            }
+          })
+        }
+      })
     }
   }
 
@@ -255,6 +346,24 @@ export default function GamePage({ params }: { params: { code: string } }) {
     socket.emit("sendEmojiReaction", reaction)
   }
 
+  const handleStartTournament = (category: TournamentCategory) => {
+    if (socket) {
+      socket.emit("startTournament", {
+        gameCode: params.code,
+        category
+      })
+    }
+  }
+
+  const handleTournamentEnd = (winner: any) => {
+    if (socket) {
+      socket.emit("endTournament", {
+        gameCode: params.code,
+        winner
+      })
+    }
+  }
+
   if (!isNameSet && !isAdmin) {
     return (
       <div className="flex min-h-screen items-center justify-center p-4">
@@ -282,38 +391,70 @@ export default function GamePage({ params }: { params: { code: string } }) {
       <Toaster />
       <div className="max-w-4xl mx-auto space-y-8 relative">
         <div className="bg-gray-800 rounded-lg shadow-lg p-6 animate-fade-in">
-            <GameHeader
+          <GameHeader
             gameCode={params.code}
             isAdmin={isAdmin}
             joinRequestCount={joinRequests.length}
             onShowJoinRequests={() => setShowJoinRequests(true)}
             onEndGame={handleEndGame}
-            />
+          />
 
-            <PlayersList
+          <PlayersList
             players={players}
             gameStarted={gameStarted}
             readyCount={readyPlayerCount}
             totalCount={totalPlayerCount}
-            />
+            isTournament={isTournament}
+            votingProgress={votingProgress}
+          />
         </div>
 
         {isAdmin && !gameStarted && (
           <div className="bg-gray-800 rounded-lg shadow-lg p-6 space-y-4 animate-slide-in">
-            <QuestionGenerator onQuestionGenerated={setQuestion} />
-            <textarea
-              value={question}
-              onChange={(e) => setQuestion(e.target.value)}
-              placeholder="Sorunuzu yazın veya üretin"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md text-black focus:outline-none"
-            />
-            <Button onClick={handleStartGame} className="w-full bg-sky-600 text-white hover:bg-sky-700">
-              Oyunu Başlat
-            </Button>
+            <div className="flex gap-4">
+              <Button
+                onClick={() => setIsTournament(false)}
+                className={`flex-1 ${!isTournament ? 'bg-sky-600' : 'bg-gray-600'}`}
+              >
+                Soru-Cevap
+              </Button>
+              <Button
+                onClick={() => setIsTournament(true)}
+                className={`flex-1 ${isTournament ? 'bg-sky-600' : 'bg-gray-600'}`}
+              >
+                Turnuva
+              </Button>
+            </div>
+
+            {isTournament ? (
+              <TournamentSetup onStartTournament={handleStartTournament} />
+            ) : (
+              <>
+                <QuestionGenerator onQuestionGenerated={setQuestion} />
+                <textarea
+                  value={question}
+                  onChange={(e) => setQuestion(e.target.value)}
+                  placeholder="Sorunuzu yazın veya üretin"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md text-black focus:outline-none"
+                />
+                <Button onClick={handleStartGame} className="w-full bg-sky-600 text-white hover:bg-sky-700">
+                  Oyunu Başlat
+                </Button>
+              </>
+            )}
           </div>
         )}
 
-        {gameStarted && !showAnswers && (
+        {gameStarted && isTournament && tournamentCategory && (
+          <Tournament
+            category={tournamentCategory}
+            onTournamentEnd={handleTournamentEnd}
+            socket={socket}
+            gameCode={params.code}
+          />
+        )}
+
+        {gameStarted && !isTournament && !showAnswers && (
           <QuestionAnswerForm
             question={question}
             answer={answer}
@@ -323,7 +464,7 @@ export default function GamePage({ params }: { params: { code: string } }) {
           />
         )}
 
-        {showAnswers && (
+        {showAnswers && !isTournament && (
           <AnswersCard
             players={players}
             isAdmin={isAdmin}
@@ -383,7 +524,7 @@ export default function GamePage({ params }: { params: { code: string } }) {
         </div>
 
         {/* Emoji Bar */}
-        {isNameSet && <EmojiBar onEmojiClick={handleEmojiClick} />}
+        {/* {isNameSet && <EmojiBar onEmojiClick={handleEmojiClick} />} */}
       </div>
     </div>
   )
