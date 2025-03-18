@@ -1,0 +1,96 @@
+{
+  "categories": [
+    {
+      "id": "movies",
+      "name": "En İyi Film",
+      "options": [
+        {
+          "id": "m1",
+          "title": "Inception",
+          "imageUrl": "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_FMjpg_UX1000_.jpg"
+        },
+        {
+          "id": "m2",
+          "title": "The Dark Knight",
+          "imageUrl": "https://m.media-amazon.com/images/M/MV5BMTMxNTMwODM0NF5BMl5BanBnXkFtZTcwODAyMTk2Mw@@._V1_.jpg"
+        },
+        {
+          "id": "m3",
+          "title": "Pulp Fiction",
+          "imageUrl": "https://m.media-amazon.com/images/M/MV5BNGNhMDIzZTUtNTBlZi00MTRlLWFjM2ItYzViMjE3YzI5MjljXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_.jpg"
+        },
+        {
+          "id": "m4",
+          "title": "The Godfather",
+          "imageUrl": "https://m.media-amazon.com/images/M/MV5BM2MyNjYxNmUtYTAwNi00MTYxLWJmNWYtYzZlODY3ZTk3OTFlXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_.jpg"
+        },
+        {
+          "id": "m5",
+          "title": "Fight Club",
+          "imageUrl": "https://m.media-amazon.com/images/M/MV5BNDIzNDU0YzEtYzE5Ni00ZjlkLTk5ZjgtNjM3NWE4YzA3Nzk3XkEyXkFqcGdeQXVyMjUzOTY1NTc@._V1_.jpg"
+        },
+        {
+          "id": "m6",
+          "title": "The Matrix",
+          "imageUrl": "https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_.jpg"
+        },
+        {
+          "id": "m7",
+          "title": "Forrest Gump",
+          "imageUrl": "https://m.media-amazon.com/images/M/MV5BNWIwODRlZTUtY2U3ZS00Yzg1LWJhNzYtMmZiYmEyNmU1NjMzXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_.jpg"
+        },
+        {
+          "id": "m8",
+          "title": "The Shawshank Redemption",
+          "imageUrl": "https://m.media-amazon.com/images/M/MV5BNDE3ODcxYzMtY2YzZC00NmNlLWJiNDMtZDViZWM2MzIxZDYwXkEyXkFqcGdeQXVyNjAwNDUxODI@._V1_.jpg"
+        }
+      ]
+    },
+    {
+      "id": "foods",
+      "name": "En İyi Yemek",
+      "options": [
+        {
+          "id": "f1",
+          "title": "Pizza",
+          "imageUrl": "https://images.unsplash.com/photo-1513104890138-7c749659a591"
+        },
+        {
+          "id": "f2",
+          "title": "Burger",
+          "imageUrl": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd"
+        },
+        {
+          "id": "f3",
+          "title": "Sushi",
+          "imageUrl": "https://images.unsplash.com/photo-1579871494447-9811cf80d66c"
+        },
+        {
+          "id": "f4",
+          "title": "Pasta",
+          "imageUrl": "https://images.unsplash.com/photo-1551183053-bf91a1d81141"
+        },
+        {
+          "id": "f5",
+          "title": "Taco",
+          "imageUrl": "https://images.unsplash.com/photo-1551504734-5ee1c4a1479b"
+        },
+        {
+          "id": "f6",
+          "title": "Kebap",
+          "imageUrl": "https://images.unsplash.com/photo-1529193591184-b1d58069ecdd"
+        },
+        {
+          "id": "f7",
+          "title": "Lahmacun",
+          "imageUrl": "https://images.unsplash.com/photo-1628294895950-9805252327bc"
+        },
+        {
+          "id": "f8",
+          "title": "Pide",
+          "imageUrl": "https://images.unsplash.com/photo-1628294896530-8c0d0a760310"
+        }
+      ]
+    }
+  ]
+} 

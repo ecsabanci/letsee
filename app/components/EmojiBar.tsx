@@ -5,7 +5,7 @@ interface EmojiBarProps {
   className?: string
 }
 
-const EMOJIS = ['👍', '❤️', '😂', '😮', '👏', '🎉']
+const EMOJIS = ['👍', '❤️', '😂', '😮', '👏', '🎉', '💩']
 const COOLDOWN_TIME = 5000 // 5 saniye
 
 export function EmojiBar({ onEmojiClick, className = '' }: EmojiBarProps) {
