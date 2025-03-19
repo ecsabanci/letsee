@@ -53,7 +53,7 @@ export function PlayersList({
         {displayedPlayers.map((player) => (
           <div
             key={player.id}
-            className={`px-3 py-1 rounded-full text-sm border-2 animate-bounce-in ${
+            className={`px-3 py-1 rounded-full text-xs border-2 animate-bounce-in ${
               (!isTournament && player.isReady) ? "bg-teal-400" : "bg-gray-800"
             } ${player.isAdmin ? "border-sky-600" : "border-gray-600"} ${
               (!isTournament && player.isReady) ? "animate-pulse-slow" : ""
@@ -67,7 +67,7 @@ export function PlayersList({
         {remainingCount > 0 && (
           <Button
             onClick={() => setShowAllPlayers(true)}
-            className="px-3 py-1 rounded-full text-sm bg-gray-700 hover:bg-gray-600 transition-colors"
+            className="px-3 py-1 rounded-full text-xs bg-gray-700 hover:bg-gray-600 transition-colors"
           >
             ve {remainingCount} kişi daha
           </Button>
@@ -75,7 +75,7 @@ export function PlayersList({
       </div>
 
       {gameStarted && (
-        <div className="mt-4 text-sm text-gray-400">
+        <div className="mt-4 text-xs text-gray-400">
           {isTournament ? (
             votingProgress ? (
               `${votingProgress.voted} / ${votingProgress.total} oyuncu oy kullandı`

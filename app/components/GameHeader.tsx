@@ -35,15 +35,15 @@ export function GameHeader({
         <div className="flex items-center justify-between">
           <Button
             onClick={onEndGame}
-            className="bg-rose-500 hover:bg-rose-600 text-white mb-4 animate-bounce-in"
+            className="bg-rose-500 text-xs hover:bg-rose-600 text-white mb-4 animate-bounce-in"
           >
             Oyunu Sonlandır
           </Button>
           <Button
             onClick={onShowJoinRequests}
-            className="bg-lime-600 hover:bg-lime-700 text-white mb-4 flex items-center gap-2 animate-bounce-in relative"
+            className="bg-lime-600 text-xs hover:bg-lime-700 text-white mb-4 flex items-center gap-2 animate-bounce-in relative"
           >
-            <UserPlusIcon className="w-6 h-6" />
+            <UserPlusIcon className="w-4 h-4" />
             {joinRequestCount}
             {joinRequestCount > 0 && (
             <span className="absolute flex size-2 -right-1 -top-1">
@@ -56,7 +56,7 @@ export function GameHeader({
       )}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center">
-          <h1 className="text-2xl font-bold">
+          <h1 className="font-bold">
             Oyun Kodu: <span className="text-teal-600">{gameCode}</span>
           </h1>
           <button

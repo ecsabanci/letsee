@@ -109,7 +109,7 @@ export default function Home() {
       <Toaster />
       <div className="w-full max-w-4xl space-y-8">
         <div className="text-center">
-          <h1 className="text-4xl font-bold mb-2">Oyun Zamanı!</h1>
+          <h1 className="text-3xl font-bold mb-2">Oyun Zamanı!</h1>
           <p className="text-gray-400">Yeni bir oyun oluştur veya mevcut bir oyuna katıl</p>
         </div>
 

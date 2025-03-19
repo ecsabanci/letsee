@@ -8,6 +8,7 @@ import { Modal } from "./ui/modal"
 import { Button } from "./ui/button"
 import { PaperAirplaneIcon, XMarkIcon, ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline"
 import { PlayersList } from "./PlayersList"
+import { EmojiBar } from "./EmojiBar"
 
 interface TournamentOption {
   id: string
@@ -345,7 +346,7 @@ export const Tournament = memo(function Tournament({ category, onTournamentEnd, 
   return (
     <div className="space-y-8">
       <div className="text-center">
-        <div className="text-gray-400 space-y-1">
+        <div className="text-gray-400 text-xs space-y-1">
           <p>
             Kalan Eşleşme: {remainingMatches + 1}
           </p>
@@ -373,7 +374,7 @@ export const Tournament = memo(function Tournament({ category, onTournamentEnd, 
         isOpen={showTieModal}
         onClose={() => {}}
       >
-        <div className="space-y-2 max-h-[100vh] overflow-y-auto">
+        <div className="space-y-2 text-xs max-h-[100vh] overflow-y-auto">
           <div className="bg-yellow-500 rounded-lg p-3">
             <p className="font-semibold">
               ⚠️ Oylar eşit çıktı! ({tieOptions?.option1.title} - {tieOptions?.option2.title})
@@ -389,14 +390,14 @@ export const Tournament = memo(function Tournament({ category, onTournamentEnd, 
           {/* Chat alanı */}
           <div 
             ref={chatContainerRef}
-            className="h-80 bg-gray-800 rounded-lg p-6 overflow-y-auto space-y-3"
+            className="h-80 bg-gray-800 text-xs rounded-lg p-6 overflow-y-auto space-y-3"
           >
             {chatMessages.map((msg) => (
               <ChatMessageItem key={msg.id} message={msg} />
             ))}
             {chatMessages.length === 0 && (
               <div className="h-full flex items-center justify-center">
-                <p className="text-gray-500 text-center text-lg">
+                <p className="text-gray-500 text-center">
                   Şimdi tartışmaya başlayın!
                 </p>
               </div>
@@ -404,10 +405,10 @@ export const Tournament = memo(function Tournament({ category, onTournamentEnd, 
           </div>
 
           {/* Mesaj gönderme alanı */}
-          <div className="flex gap-3">
+          <div className="flex items-center gap-1">
             <textarea
               placeholder="Mesajınızı yazın..."
-              className="flex-1 px-4 py-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:border-sky-500 text-lg resize-none"
+              className="flex-1 px-4 py-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:border-sky-500 text-xs resize-none"
               rows={2}
               onKeyPress={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
