@@ -49,7 +49,7 @@ export const TournamentMatch = memo(function TournamentMatch({
   if (!option1?.id || !option2?.id) {
     return (
       <div className="text-center py-8">
-        <p className="text-gray-400">Maç bilgileri yükleniyor...</p>
+        <p className="text-gray-400 text-xs">Maç bilgileri yükleniyor...</p>
       </div>
     )
   }
@@ -118,8 +118,8 @@ export const TournamentMatch = memo(function TournamentMatch({
 
         {/* VS */}
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
-          <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center shadow-lg">
-            <span className="text-2xl font-bold text-white">VS</span>
+          <div className="w-12 h-12 bg-rose-500 rounded-full flex items-center justify-center shadow-lg">
+            <span className="font-bold text-white">VS</span>
           </div>
         </div>
 
