@@ -246,6 +246,7 @@ export const Tournament = memo(function Tournament({ category, onTournamentEnd, 
     socket.on("tournamentTie", handleTournamentTie)
     socket.on("tournamentTieEnd", handleTournamentTieEnd)
     socket.on("tournamentVote", handleTournamentVote)
+    socket.on("tournamentChatMessage", handleChatMessage)
 
     return () => {
       socket.off("tournamentStarted", handleTournamentStart)
@@ -254,6 +255,7 @@ export const Tournament = memo(function Tournament({ category, onTournamentEnd, 
       socket.off("tournamentTie", handleTournamentTie)
       socket.off("tournamentTieEnd", handleTournamentTieEnd)
       socket.off("tournamentVote", handleTournamentVote)
+      socket.off("tournamentChatMessage", handleChatMessage)
     }
   }, [
     socket,
@@ -264,7 +266,8 @@ export const Tournament = memo(function Tournament({ category, onTournamentEnd, 
     handleTournamentEnd,
     handleTournamentTie,
     handleTournamentTieEnd,
-    handleTournamentVote
+    handleTournamentVote,
+    handleChatMessage
   ])
 
   const handleEndTie = useCallback(() => {
@@ -285,10 +288,14 @@ export const Tournament = memo(function Tournament({ category, onTournamentEnd, 
   const handleSendMessage = useCallback((message: string) => {
     if (!socket || !message.trim()) return
 
-    socket.emit("tournamentChatMessage", {
+    const chatMessage = {
       gameCode,
-      message: message.trim()
-    })
+      message: message.trim(),
+      timestamp: Date.now(),
+      id: Math.random().toString(36).substring(2)
+    }
+
+    socket.emit("tournamentChatMessage", chatMessage)
   }, [socket, gameCode])
 
   // Oyuncuları güncelleme
