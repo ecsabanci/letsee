@@ -6,7 +6,7 @@ import { TournamentWinner } from "./TournamentWinner"
 import { Socket } from "socket.io-client"
 import { Modal } from "./ui/modal"
 import { Button } from "./ui/button"
-import { PaperAirplaneIcon, XMarkIcon, ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline"
+import { PaperAirplaneIcon, XMarkIcon, ChevronDownIcon, ChevronUpIcon, ArrowPathIcon } from "@heroicons/react/24/outline"
 import { PlayersList } from "./PlayersList"
 import { EmojiBar } from "./EmojiBar"
 
@@ -347,14 +347,13 @@ export const Tournament = memo(function Tournament({ category, onTournamentEnd, 
     <div className="space-y-8">
       <div className="text-center">
         <div className="text-gray-400 text-xs space-y-1">
-          <p>
+          <p className="mb-4">
             Kalan Eşleşme: {remainingMatches + 1}
           </p>
-          {showingResults && (
-            <p>
-              Sonuçlar gösteriliyor
-            </p>
-          )}
+          <p className={`flex items-center justify-center gap-2 ${showingResults ? 'visible' : 'invisible'}`}>
+            Sonuçlar gösteriliyor
+            <ArrowPathIcon className="w-4 h-4 animate-spin" />
+          </p>
         </div>
       </div>
 

@@ -1,96 +1,336 @@
 {
   "categories": [
     {
-      "id": "movies",
-      "name": "En İyi Film",
+      "id": "football-players",
+      "name": "futbolcular",
       "options": [
         {
-          "id": "m1",
-          "title": "Inception",
-          "imageUrl": "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_FMjpg_UX1000_.jpg"
+          "id": "p1",
+          "title": "Lionel Messi",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Lionel-Messi-Argentina-2022-FIFA-World-Cup_%28cropped%29.jpg/640px-Lionel-Messi-Argentina-2022-FIFA-World-Cup_%28cropped%29.jpg"
         },
         {
-          "id": "m2",
-          "title": "The Dark Knight",
-          "imageUrl": "https://m.media-amazon.com/images/M/MV5BMTMxNTMwODM0NF5BMl5BanBnXkFtZTcwODAyMTk2Mw@@._V1_.jpg"
+          "id": "p2",
+          "title": "Cristiano Ronaldo",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Cristiano_Ronaldo_2018.jpg/800px-Cristiano_Ronaldo_2018.jpg"
         },
         {
-          "id": "m3",
-          "title": "Pulp Fiction",
-          "imageUrl": "https://m.media-amazon.com/images/M/MV5BNGNhMDIzZTUtNTBlZi00MTRlLWFjM2ItYzViMjE3YzI5MjljXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_.jpg"
+          "id": "p3",
+          "title": "Erling Haaland",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Erling_Haaland_2023.jpg/640px-Erling_Haaland_2023.jpg"
         },
         {
-          "id": "m4",
-          "title": "The Godfather",
-          "imageUrl": "https://m.media-amazon.com/images/M/MV5BM2MyNjYxNmUtYTAwNi00MTYxLWJmNWYtYzZlODY3ZTk3OTFlXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_.jpg"
+          "id": "p4",
+          "title": "Kylian Mbappé",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/Kylian_Mbapp%C3%A9_World_Cup_Trophy.jpg/640px-Kylian_Mbapp%C3%A9_World_Cup_Trophy.jpg"
         },
         {
-          "id": "m5",
-          "title": "Fight Club",
-          "imageUrl": "https://m.media-amazon.com/images/M/MV5BNDIzNDU0YzEtYzE5Ni00ZjlkLTk5ZjgtNjM3NWE4YzA3Nzk3XkEyXkFqcGdeQXVyMjUzOTY1NTc@._V1_.jpg"
+          "id": "p5",
+          "title": "Kevin De Bruyne",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/2021-12-07_Fu%C3%9Fball%2C_M%C3%A4nner%2C_UEFA_Champions_League%2C_RB_Leipzig_-_Manchester_City_FC_1DX_2782_by_Stepro_%28cropped%29.jpg/640px-2021-12-07_Fu%C3%9Fball%2C_M%C3%A4nner%2C_UEFA_Champions_League%2C_RB_Leipzig_-_Manchester_City_FC_1DX_2782_by_Stepro_%28cropped%29.jpg"
         },
         {
-          "id": "m6",
-          "title": "The Matrix",
-          "imageUrl": "https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_.jpg"
+          "id": "p6",
+          "title": "Mohamed Salah",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Salah_with_a_fan.PNG/640px-Salah_with_a_fan.PNG"
         },
         {
-          "id": "m7",
-          "title": "Forrest Gump",
-          "imageUrl": "https://m.media-amazon.com/images/M/MV5BNWIwODRlZTUtY2U3ZS00Yzg1LWJhNzYtMmZiYmEyNmU1NjMzXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_.jpg"
+          "id": "p7",
+          "title": "Virgil van Dijk",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/20160604_AUT_NED_8876_%28cropped%29.jpg/640px-20160604_AUT_NED_8876_%28cropped%29.jpg"
         },
         {
-          "id": "m8",
-          "title": "The Shawshank Redemption",
-          "imageUrl": "https://m.media-amazon.com/images/M/MV5BNDE3ODcxYzMtY2YzZC00NmNlLWJiNDMtZDViZWM2MzIxZDYwXkEyXkFqcGdeQXVyNjAwNDUxODI@._V1_.jpg"
+          "id": "p8",
+          "title": "Robert Lewandowski",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Robert_Lewandowski_2018%2C_JAP-POL_%28cropped%29.jpg/640px-Robert_Lewandowski_2018%2C_JAP-POL_%28cropped%29.jpg"
+        },
+        {
+          "id": "p9",
+          "title": "Luka Modric",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Luka_Modric_2018.png/640px-Luka_Modric_2018.png"
+        },
+        {
+          "id": "p10",
+          "title": "Neymar Jr",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Neymar_Jr._with_Al_Hilal%2C_3_October_2023_-_03_%28cropped%29.jpg/640px-Neymar_Jr._with_Al_Hilal%2C_3_October_2023_-_03_%28cropped%29.jpg"
+        },
+        {
+          "id": "p11",
+          "title": "Karim Benzema",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/Karim_Benzema_17586.jpg/640px-Karim_Benzema_17586.jpg"
+        },
+        {
+          "id": "p12",
+          "title": "Jude Bellingham",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Jude_Bellingham_Birmingham_2019.jpg/640px-Jude_Bellingham_Birmingham_2019.jpg"
+        },
+        {
+          "id": "p13",
+          "title": "Vinicius Jr",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Vinicius_Jr_2021.jpg/640px-Vinicius_Jr_2021.jpg"
+        },
+        {
+          "id": "p14",
+          "title": "Harry Kane",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Harry_Kane_statue_2.jpg/640px-Harry_Kane_statue_2.jpg"
+        },
+        {
+          "id": "p15",
+          "title": "Bruno Fernandes",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Bruno_Fernandes_Portugal%2C_2018.jpg/640px-Bruno_Fernandes_Portugal%2C_2018.jpg"
+        },
+        {
+          "id": "p16",
+          "title": "Trent Alexander-Arnold",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Trent_Alexander_Arnold_2022_%282%29_%28cropped%29.jpg/640px-Trent_Alexander_Arnold_2022_%282%29_%28cropped%29.jpg"
+        },
+        {
+          "id": "p17",
+          "title": "Phil Foden",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Phil_Foden_2022-11-21_1.jpg/640px-Phil_Foden_2022-11-21_1.jpg"
+        },
+        {
+          "id": "p18",
+          "title": "Antoine Griezmann",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Antoine_Griezmann_October_2017.png/640px-Antoine_Griezmann_October_2017.png"
+        },
+        {
+          "id": "p19",
+          "title": "Lamine Yamal",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/Lamine_Yamal_after_3rd_goal_vs_Real_Madrid.jpg/640px-Lamine_Yamal_after_3rd_goal_vs_Real_Madrid.jpg"
+        },
+        {
+          "id": "p20",
+          "title": "Bukayo Saka",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Bukayo_Saka.jpg/640px-Bukayo_Saka.jpg"
+        },
+        {
+          "id": "p21",
+          "title": "Florian Wirtz",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Florian_Wirtz%2C_2022-07-31%2C_Saisoner%C3%B6ffnung_Bayer_04%2C_Leverkusen_%281%29.jpg/640px-Florian_Wirtz%2C_2022-07-31%2C_Saisoner%C3%B6ffnung_Bayer_04%2C_Leverkusen_%281%29.jpg"
+        },
+        {
+          "id": "p22",
+          "title": "Cole Palmer",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/ColePalmervsLeicester.jpg/640px-ColePalmervsLeicester.jpg"
+        },
+        {
+          "id": "p23",
+          "title": "Pedri",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/%D0%9C%D0%B0%D1%82%D1%87_%C2%AB%D0%94%D0%B8%D0%BD%D0%B0%D0%BC%D0%BE%C2%BB_-_%C2%AB%D0%91%D0%B0%D1%80%D1%81%D0%B5%D0%BB%D0%BE%D0%BD%D0%B0%C2%BB_0-4._24_%D0%BD%D0%BE%D1%8F%D0%B1%D1%80%D1%8F_2020_%D0%B3%D0%BE%D0%B4%D0%B0_%E2%80%94_1166854_%28Pedro_Gonz%C3%A1lez_L%C3%B3pez%2C_Pedri%29.jpg/640px-%D0%9C%D0%B0%D1%82%D1%87_%C2%AB%D0%94%D0%B8%D0%BD%D0%B0%D0%BC%D0%BE%C2%BB_-_%C2%AB%D0%91%D0%B0%D1%80%D1%81%D0%B5%D0%BB%D0%BE%D0%BD%D0%B0%C2%BB_0-4._24_%D0%BD%D0%BE%D1%8F%D0%B1%D1%80%D1%8F_2020_%D0%B3%D0%BE%D0%B4%D0%B0_%E2%80%94_1166854_%28Pedro_Gonz%C3%A1lez_L%C3%B3pez%2C_Pedri%29.jpg"
+        },
+        {
+          "id": "p24",
+          "title": "Raphinha",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Raphinha_WC2022.jpg/640px-Raphinha_WC2022.jpg"
+        },
+        {
+          "id": "p25",
+          "title": "Jamal Musiala",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Jamal_Musiala_WC2022.jpg/640px-Jamal_Musiala_WC2022.jpg"
+        },
+        {
+          "id": "p26",
+          "title": "Federico Valverde",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Federico_Valverde_Real_Madrid_2018.jpg/640px-Federico_Valverde_Real_Madrid_2018.jpg"
+        },
+        {
+          "id": "p27",
+          "title": "Rodri",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Rhodri_Man_City_2021_2.jpg/640px-Rhodri_Man_City_2021_2.jpg"
+        },
+        {
+          "id": "p28",
+          "title": "Julian Alvarez",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Juli%C3%A1n_%C3%81lvarez_%28footballer%29_2023.jpg/640px-Juli%C3%A1n_%C3%81lvarez_%28footballer%29_2023.jpg"
+        },
+        {
+          "id": "p29",
+          "title": "Khvicha Kvaratskhelia",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Khvicha_Kvaratskhelia_2019.jpg/640px-Khvicha_Kvaratskhelia_2019.jpg"
+        },
+        {
+          "id": "p30",
+          "title": "Cody Gakpo",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Austria_U-18_vs._Netherlands_U-18_2017-03-23_%28078%29.jpg/640px-Austria_U-18_vs._Netherlands_U-18_2017-03-23_%28078%29.jpg"
+        },
+        {
+          "id": "p31",
+          "title": "Kai Havertz",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Kai_Havertz_2020.jpg/640px-Kai_Havertz_2020.jpg"
+        },
+        {
+          "id": "p32",
+          "title": "Rodrygo",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/POST-CARD-MONTAGEM-RODRYGO_%28cropped%29_%28cropped%29.png/640px-POST-CARD-MONTAGEM-RODRYGO_%28cropped%29_%28cropped%29.png"
         }
       ]
     },
     {
-      "id": "foods",
-      "name": "En İyi Yemek",
+      "id": "snack-foods",
+      "name": "best of atıştırmalık",
       "options": [
         {
           "id": "f1",
-          "title": "Pizza",
-          "imageUrl": "https://images.unsplash.com/photo-1513104890138-7c749659a591"
+          "title": "Eti Combo",
+          "imageUrl": "https://images.migrosone.com/sanalmarket/product/07018022/07018022-d240d5-1650x1650.jpg"
         },
         {
           "id": "f2",
-          "title": "Burger",
-          "imageUrl": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd"
+          "title": "Ruffles Ketçap",
+          "imageUrl": "https://images.migrosone.com/sanalmarket/product/05087054/05087054-ea254e-1650x1650.jpg"
         },
         {
           "id": "f3",
-          "title": "Sushi",
-          "imageUrl": "https://images.unsplash.com/photo-1579871494447-9811cf80d66c"
+          "title": "Lay's Mevsim Yeşillikli",
+          "imageUrl": "https://images.migrosone.com/sanalmarket/product/05080150/05080150_1-5c5839-1650x1650.jpg"
         },
         {
           "id": "f4",
-          "title": "Pasta",
-          "imageUrl": "https://images.unsplash.com/photo-1551183053-bf91a1d81141"
+          "title": "Doritos Nacho",
+          "imageUrl": "https://images.migrosone.com/sanalmarket/product/05087040/05087040-e71f31-1650x1650.jpg"
         },
         {
           "id": "f5",
-          "title": "Taco",
-          "imageUrl": "https://images.unsplash.com/photo-1551504734-5ee1c4a1479b"
+          "title": "Popkek Kakaolu",
+          "imageUrl": "https://images.migrosone.com/sanalmarket/product/05106710/5106710-97c206-1650x1650.jpg"
         },
         {
           "id": "f6",
-          "title": "Kebap",
-          "imageUrl": "https://images.unsplash.com/photo-1529193591184-b1d58069ecdd"
+          "title": "Ülker Çizi",
+          "imageUrl": "https://images.migrosone.com/sanalmarket/product/7017082/7017082-f4763e-1650x1650.jpg"
         },
         {
           "id": "f7",
-          "title": "Lahmacun",
-          "imageUrl": "https://images.unsplash.com/photo-1628294895950-9805252327bc"
+          "title": "Tadelle",
+          "imageUrl": "https://images.migrosone.com/sanalmarket/product/07163345/tadelle-sutlu-cikolata-52-gr-f4034e-1650x1650.jpg"
         },
         {
           "id": "f8",
-          "title": "Pide",
-          "imageUrl": "https://images.unsplash.com/photo-1628294896530-8c0d0a760310"
+          "title": "Albeni",
+          "imageUrl": "https://images.migrosone.com/sanalmarket/product/07019715/ulker-albeni-atistirmalik-cikolatali-63-g-cdbf23-1650x1650.jpg"
+        },
+        {
+          "id": "f9",
+          "title": "Dankek 8 Kek",
+          "imageUrl": "https://images.migrosone.com/sanalmarket/product/5096557/5096557-6da2d8-1650x1650.jpg"
+        },
+        {
+          "id": "f10",
+          "title": "Halley",
+          "imageUrl": "https://images.migrosone.com/sanalmarket/product/07018210/07018210-ef4e2d-1650x1650.jpg"
+        },
+        {
+          "id": "f11",
+          "title": "Ülker Metro",
+          "imageUrl": "https://images.migrosone.com/sanalmarket/product/07037070/07037070-2e7e57-1650x1650.jpg"
+        },
+        {
+          "id": "f12",
+          "title": "Nestle Crunch",
+          "imageUrl": "https://images.migrosone.com/sanalmarket/product/07163501/07163501-3dac25-1650x1650.jpg"
+        },
+        {
+          "id": "f13",
+          "title": "Haribo Altın Ayıcık",
+          "imageUrl": "https://images.migrosone.com/sanalmarket/product/7110287/7110287-b8565e-1650x1650.jpg"
+        },
+        {
+          "id": "f14",
+          "title": "Eti Cin",
+          "imageUrl": "https://images.migrosone.com/sanalmarket/product/07010360/7010360_1-039b10-1650x1650.jpeg"
+        },
+        {
+          "id": "f15",
+          "title": "Crax Peynirli",
+          "imageUrl": "https://images.migrosone.com/sanalmarket/product/7010765/7010765-ec1119-1650x1650.jpg"
+        },
+        {
+          "id": "f16",
+          "title": "Çerezza",
+          "imageUrl": "https://images.migrosone.com/sanalmarket/product/05089540/05089540-344fa2-1650x1650.jpg"
+        },
+        {
+          "id": "f17",
+          "title": "Eti Gong",
+          "imageUrl": "https://images.migrosone.com/sanalmarket/product/05099133/05099133-3b5090-1650x1650.jpg"
+        },
+        {
+          "id": "f18",
+          "title": "Cici Bebe",
+          "imageUrl": "https://images.migrosone.com/sanalmarket/product/07010051/07010051-183d22-1650x1650.jpg"
+        },
+        {
+          "id": "f19",
+          "title": "Biskrem",
+          "imageUrl": "https://images.migrosone.com/sanalmarket/product/07011113/07011113-addd01-1650x1650.jpg"
+        },
+        {
+          "id": "f20",
+          "title": "Browni Intense",
+          "imageUrl": "https://images.migrosone.com/sanalmarket/product/05098209/eti-browni-intense-50-gr-bb8473-1650x1650.jpg"
+        },
+        {
+          "id": "f21",
+          "title": "Eti Puf",
+          "imageUrl": "https://images.migrosone.com/sanalmarket/product/07010980/07010980-472bfb-1650x1650.jpg"
+        },
+        {
+          "id": "f22",
+          "title": "Combo",
+          "imageUrl": "https://images.migrosone.com/sanalmarket/product/07018022/07018022-d240d5-1650x1650.jpg"
+        },
+        {
+          "id": "f23",
+          "title": "İkram Fındıklı",
+          "imageUrl": "https://images.migrosone.com/sanalmarket/product/07011126/7011126-54683d-1650x1650.jpg"
+        },
+        {
+          "id": "f24",
+          "title": "Rulokat",
+          "imageUrl": "https://images.migrosone.com/sanalmarket/product/07160175/07160175-ebeec5-1650x1650.jpg"
+        },
+        {
+          "id": "f25",
+          "title": "Kekstra",
+          "imageUrl": "https://images.migrosone.com/sanalmarket/product/07010256/07010256-d31446-1650x1650.jpg"
+        },
+        {
+          "id": "f26",
+          "title": "Benim'O",
+          "imageUrl": "https://images.migrosone.com/sanalmarket/product/7017799/7017799-4e443c-1650x1650.jpg"
+        },
+        {
+          "id": "f27",
+          "title": "Hoşbeş Fındık",
+          "imageUrl": "https://images.migrosone.com/sanalmarket/product/07160087/07160087-f67967-1650x1650.jpg"
+        },
+        {
+          "id": "f28",
+          "title": "Cheetos Peynir",
+          "imageUrl": "https://images.migrosone.com/sanalmarket/product/05089491/05089491-872d98-1650x1650.jpg"
+        },
+        {
+          "id": "f29",
+          "title": "Cheetos Biftek",
+          "imageUrl": "https://images.migrosone.com/sanalmarket/product/05089493/05089493-d5cf8e-1650x1650.jpg"
+        },
+        {
+          "id": "f30",
+          "title": "9 Kat Tat Fındık",
+          "imageUrl": "https://images.migrosone.com/sanalmarket/product/07160008/07160008-fcd272-1650x1650.jpg"
+        },
+        {
+          "id": "f31",
+          "title": "Balık",
+          "imageUrl": "https://images.migrosone.com/sanalmarket/product/7017073/7017073-1bf704-1650x1650.jpg"
+        },
+        {
+          "id": "f32",
+          "title": "Susamlı Çubuk",
+          "imageUrl": "https://images.migrosone.com/sanalmarket/product/07011717/07011717-cdc9e6-1650x1650.jpg"
         }
       ]
     }
   ]
-} 
+}

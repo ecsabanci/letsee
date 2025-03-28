@@ -105,7 +105,7 @@ export const TournamentMatch = memo(function TournamentMatch({
             <Image
               src={option1.imageUrl}
               alt={option1.title}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain"
               width={400}
               height={400}
               priority
@@ -140,7 +140,7 @@ export const TournamentMatch = memo(function TournamentMatch({
             <Image
               src={option2.imageUrl}
               alt={option2.title}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain"
               width={400}
               height={400}
               priority
