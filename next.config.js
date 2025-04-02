@@ -6,7 +6,8 @@ const nextConfig = {
       'images.unsplash.com',
       'm.media-amazon.com',
       'unsplash.com',
-      'upload.wikimedia.org'
+      'upload.wikimedia.org',
+      'res.cloudinary.com'
     ],
   },
 }

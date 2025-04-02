@@ -6,7 +6,8 @@ import Image from "next/image"
 interface TournamentOption {
   id: string
   title: string
-  imageUrl: string
+  imageUrl?: string
+  videoUrl?: string
 }
 
 interface TournamentMatchProps {
@@ -32,6 +33,44 @@ function arePropsEqual(prevProps: TournamentMatchProps, nextProps: TournamentMat
   )
 }
 
+function MediaDisplay({ option }: { option: TournamentOption }) {
+  console.info('==============> MediaDisplay', option)
+  if (option?.videoUrl) {
+    return (
+      <video
+        src={option.videoUrl}
+        className="object-contain"
+        width={600}
+        height={600}
+        controls
+        loop
+        muted
+        autoPlay
+        playsInline
+      />
+    )
+  }
+
+  if (!option?.imageUrl) {
+    return (
+      <div className="w-full h-full flex items-center justify-center bg-gray-800">
+        <span className="text-gray-400">Görsel bulunamadı</span>
+      </div>
+    )
+  }
+
+  return (
+    <Image
+      src={option.imageUrl}
+      alt={option.title}
+      className="w-full h-full object-contain"
+      width={400}
+      height={400}
+      priority
+    />
+  )
+}
+
 export const TournamentMatch = memo(function TournamentMatch({
   option1,
   option2,
@@ -43,7 +82,14 @@ export const TournamentMatch = memo(function TournamentMatch({
 }: TournamentMatchProps) {
   const [selectedOption, setSelectedOption] = useState<string | null>(null)
 
-  console.info('==============> TournamentMatch')
+  // Debug için detaylı loglama ekleyelim
+  console.info('==============> TournamentMatch Props:', {
+    option1: JSON.stringify(option1),
+    option2: JSON.stringify(option2),
+    votes,
+    showResults,
+    isWalkover
+  })
 
   // Güvenlik kontrolü ekleyelim
   if (!option1?.id || !option2?.id) {
@@ -101,15 +147,8 @@ export const TournamentMatch = memo(function TournamentMatch({
               {votes[option1.id]}
             </div>
           )}
-          <div className="relative aspect-square rounded-lg overflow-hidden">
-            <Image
-              src={option1.imageUrl}
-              alt={option1.title}
-              className="w-full h-full object-contain"
-              width={400}
-              height={400}
-              priority
-            />
+          <div className="relative aspect-video rounded-lg overflow-hidden bg-black">
+            <MediaDisplay option={option1} />
           </div>
           <h3 className="text-xl font-medium text-center mt-4 text-white">
             {option1.title}
@@ -136,15 +175,8 @@ export const TournamentMatch = memo(function TournamentMatch({
               {votes[option2.id]}
             </div>
           )}
-          <div className="relative aspect-square rounded-lg overflow-hidden">
-            <Image
-              src={option2.imageUrl}
-              alt={option2.title}
-              className="w-full h-full object-contain"
-              width={400}
-              height={400}
-              priority
-            />
+          <div className="relative aspect-video rounded-lg overflow-hidden bg-black">
+            <MediaDisplay option={option2} />
           </div>
           <h3 className="text-xl font-medium text-center mt-4 text-white">
             {option2.title}

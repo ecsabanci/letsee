@@ -254,7 +254,11 @@ io.on("connection", (socket) => {
         player.isReady = false
         player.answer = ""
       })
-      io.to(gameCode).emit("gameStarted", question)
+      io.to(gameCode).emit("gameStarted", {
+        question: question,
+        isStarted: true,
+        showingAnswers: false
+      })
       broadcastActiveGames()
     }
   })
@@ -420,12 +424,14 @@ io.on("connection", (socket) => {
                   option1: {
                     id: currentMatch.option1.id,
                     title: currentMatch.option1.title,
-                    imageUrl: currentMatch.option1.imageUrl
+                    imageUrl: currentMatch.option1.imageUrl,
+                    videoUrl: currentMatch.option1.videoUrl
                   },
                   option2: {
                     id: currentMatch.option2.id,
                     title: currentMatch.option2.title,
-                    imageUrl: currentMatch.option2.imageUrl
+                    imageUrl: currentMatch.option2.imageUrl,
+                    videoUrl: currentMatch.option2.videoUrl
                   },
                   votes: { ...currentMatch.votes }
                 }
@@ -451,12 +457,14 @@ io.on("connection", (socket) => {
                         option1: {
                           id: currentMatch.option1.id,
                           title: currentMatch.option1.title,
-                          imageUrl: currentMatch.option1.imageUrl
+                          imageUrl: currentMatch.option1.imageUrl,
+                          videoUrl: currentMatch.option1.videoUrl
                         },
                         option2: {
                           id: currentMatch.option2.id,
                           title: currentMatch.option2.title,
-                          imageUrl: currentMatch.option2.imageUrl
+                          imageUrl: currentMatch.option2.imageUrl,
+                          videoUrl: currentMatch.option2.videoUrl
                         },
                         votes: {},
                         votedPlayers: []
@@ -465,7 +473,8 @@ io.on("connection", (socket) => {
                       winners: tournamentGame.winners.map(w => ({
                         id: w.id,
                         title: w.title,
-                        imageUrl: w.imageUrl
+                        imageUrl: w.imageUrl,
+                        videoUrl: w.videoUrl
                       })),
                       totalRounds: tournamentGame.totalRounds,
                       remainingMatches: tournamentGame.matches.length - tournamentGame.currentMatchIndex - 1
@@ -520,12 +529,14 @@ io.on("connection", (socket) => {
                 option1: {
                     id: nextMatch.option1.id,
                     title: nextMatch.option1.title,
-                    imageUrl: nextMatch.option1.imageUrl
+                    imageUrl: nextMatch.option1.imageUrl,
+                    videoUrl: nextMatch.option1.videoUrl
                 },
                 option2: nextMatch.option2 ? {
                     id: nextMatch.option2.id,
                     title: nextMatch.option2.title,
-                    imageUrl: nextMatch.option2.imageUrl
+                    imageUrl: nextMatch.option2.imageUrl,
+                    videoUrl: nextMatch.option2.videoUrl
                 } : null,
                 votes: {},
                 votedPlayers: []
@@ -534,7 +545,8 @@ io.on("connection", (socket) => {
             winners: tournamentGame.winners.map(w => ({
                 id: w.id,
                 title: w.title,
-                imageUrl: w.imageUrl
+                imageUrl: w.imageUrl,
+                videoUrl: w.videoUrl
             })),
             totalRounds,
             remainingMatches: matches.length - (currentMatchIndex + 1),
@@ -577,12 +589,14 @@ io.on("connection", (socket) => {
             option1: {
                 id: newMatches[0].option1.id,
                 title: newMatches[0].option1.title,
-                imageUrl: newMatches[0].option1.imageUrl
+                imageUrl: newMatches[0].option1.imageUrl,
+                videoUrl: newMatches[0].option1.videoUrl
             },
             option2: newMatches[0].option2 ? {
                 id: newMatches[0].option2.id,
                 title: newMatches[0].option2.title,
-                imageUrl: newMatches[0].option2.imageUrl
+                imageUrl: newMatches[0].option2.imageUrl,
+                videoUrl: newMatches[0].option2.videoUrl
             } : null,
             votes: {},
             votedPlayers: []
@@ -604,25 +618,40 @@ io.on("connection", (socket) => {
     const roundWinners = [...winners]
     
     for (let i = 0; i < roundWinners.length; i += 2) {
-        if (i + 1 >= roundWinners.length) {
-            matches.push({
-                id: `match-${round}-${i/2}`,
-                round: round,
-                option1: roundWinners[i],
-                option2: null,
-                votes: {},
-                votedPlayers: new Set()
-            })
-        } else {
-            matches.push({
-                id: `match-${round}-${i/2}`,
-                round: round,
-                option1: roundWinners[i],
-                option2: roundWinners[i + 1],
-                votes: {},
-                votedPlayers: new Set()
-            })
-        }
+      if (i + 1 >= roundWinners.length) {
+        matches.push({
+          id: `match-${round}-${i/2}`,
+          round: round,
+          option1: {
+            id: roundWinners[i].id,
+            title: roundWinners[i].title,
+            imageUrl: roundWinners[i].imageUrl,
+            videoUrl: roundWinners[i].videoUrl
+          },
+          option2: null,
+          votes: {},
+          votedPlayers: new Set()
+        })
+      } else {
+        matches.push({
+          id: `match-${round}-${i/2}`,
+          round: round,
+          option1: {
+            id: roundWinners[i].id,
+            title: roundWinners[i].title,
+            imageUrl: roundWinners[i].imageUrl,
+            videoUrl: roundWinners[i].videoUrl
+          },
+          option2: {
+            id: roundWinners[i + 1].id,
+            title: roundWinners[i + 1].title,
+            imageUrl: roundWinners[i + 1].imageUrl,
+            videoUrl: roundWinners[i + 1].videoUrl
+          },
+          votes: {},
+          votedPlayers: new Set()
+        })
+      }
     }
     
     return matches
@@ -645,7 +674,12 @@ io.on("connection", (socket) => {
             matches.push({
               id: `match-1-${i/2}`,
               round: 1,
-              option1: shuffledOptions[i],
+              option1: {
+                id: shuffledOptions[i].id,
+                title: shuffledOptions[i].title,
+                imageUrl: shuffledOptions[i].imageUrl,
+                videoUrl: shuffledOptions[i].videoUrl
+              },
               option2: null,
               votes: {},
               votedPlayers: new Set()
@@ -654,8 +688,18 @@ io.on("connection", (socket) => {
             matches.push({
               id: `match-1-${i/2}`,
               round: 1,
-              option1: shuffledOptions[i],
-              option2: shuffledOptions[i + 1],
+              option1: {
+                id: shuffledOptions[i].id,
+                title: shuffledOptions[i].title,
+                imageUrl: shuffledOptions[i].imageUrl,
+                videoUrl: shuffledOptions[i].videoUrl
+              },
+              option2: {
+                id: shuffledOptions[i + 1].id,
+                title: shuffledOptions[i + 1].title,
+                imageUrl: shuffledOptions[i + 1].imageUrl,
+                videoUrl: shuffledOptions[i + 1].videoUrl
+              },
               votes: {},
               votedPlayers: new Set()
             })
@@ -688,12 +732,14 @@ io.on("connection", (socket) => {
             option1: {
               id: matches[0].option1.id,
               title: matches[0].option1.title,
-              imageUrl: matches[0].option1.imageUrl
+              imageUrl: matches[0].option1.imageUrl,
+              videoUrl: matches[0].option1.videoUrl
             },
             option2: matches[0].option2 ? {
               id: matches[0].option2.id,
               title: matches[0].option2.title,
-              imageUrl: matches[0].option2.imageUrl
+              imageUrl: matches[0].option2.imageUrl,
+              videoUrl: matches[0].option2.videoUrl
             } : null,
             votes: {},
             votedPlayers: []
@@ -765,12 +811,14 @@ io.on("connection", (socket) => {
             option1: {
               id: currentMatch.option1.id,
               title: currentMatch.option1.title,
-              imageUrl: currentMatch.option1.imageUrl
+              imageUrl: currentMatch.option1.imageUrl,
+              videoUrl: currentMatch.option1.videoUrl
             },
             option2: currentMatch.option2 ? {
               id: currentMatch.option2.id,
               title: currentMatch.option2.title,
-              imageUrl: currentMatch.option2.imageUrl
+              imageUrl: currentMatch.option2.imageUrl,
+              videoUrl: currentMatch.option2.videoUrl
             } : null,
             votes: {},
             votedPlayers: []
@@ -779,7 +827,8 @@ io.on("connection", (socket) => {
           winners: tournamentGame.winners.map(w => ({
             id: w.id,
             title: w.title,
-            imageUrl: w.imageUrl
+            imageUrl: w.imageUrl,
+            videoUrl: w.videoUrl
           })),
           totalRounds: tournamentGame.totalRounds,
           remainingMatches: tournamentGame.matches.length - tournamentGame.currentMatchIndex - 1,
@@ -820,12 +869,14 @@ io.on("connection", (socket) => {
           option1: {
             id: currentMatch.option1.id,
             title: currentMatch.option1.title,
-            imageUrl: currentMatch.option1.imageUrl
+            imageUrl: currentMatch.option1.imageUrl,
+            videoUrl: currentMatch.option1.videoUrl
           },
           option2: currentMatch.option2 ? {
             id: currentMatch.option2.id,
             title: currentMatch.option2.title,
-            imageUrl: currentMatch.option2.imageUrl
+            imageUrl: currentMatch.option2.imageUrl,
+            videoUrl: currentMatch.option2.videoUrl
           } : null,
           votes: { ...currentMatch.votes } || {},
           votedPlayers: Array.from(currentMatch.votedPlayers || new Set())
@@ -834,7 +885,8 @@ io.on("connection", (socket) => {
         winners: tournamentGame.winners.map(w => ({
           id: w.id,
           title: w.title,
-          imageUrl: w.imageUrl
+          imageUrl: w.imageUrl,
+          videoUrl: w.videoUrl
         })),
         totalRounds: tournamentGame.totalRounds,
         remainingMatches: tournamentGame.matches.length - tournamentGame.currentMatchIndex - 1,

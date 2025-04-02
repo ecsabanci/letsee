@@ -3,7 +3,8 @@ import Image from "next/image"
 interface TournamentOption {
   id: string
   title: string
-  imageUrl: string
+  imageUrl: string,
+  videoUrl: string
 }
 
 interface TournamentWinnerProps {
