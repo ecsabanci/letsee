@@ -59,7 +59,8 @@ interface TournamentCategory {
   options: Array<{
     id: string
     title: string
-    imageUrl: string
+    imageUrl: string,
+    videoUrl: string
   }>
 }
 
@@ -116,10 +117,10 @@ export default function GamePage({ params }: { params: { code: string } }) {
     }
   }, [])
 
-  const handleGameStarted = useCallback((data: { category: TournamentOption[] }) => {
+  const handleGameStarted = useCallback((data: { question: string, isStarted: boolean, showingAnswers: boolean }) => {
     setGameStarted(true)
-    setCategory(data.category)
-    setIsTournament(true)
+    setQuestion(data.question)
+    setShowAnswers(data.showingAnswers)
   }, [])
 
   const handlePlayerReady = useCallback((players: Player[]) => {

@@ -1,7 +1,8 @@
 export interface TournamentOption {
   id: string
   name: string
-  imageUrl?: string
+  imageUrl?: string,
+  videoUrl?: string
 }
 
 export interface Match {

@@ -7,7 +7,8 @@ import tournamentData from "../data/tournament-categories.json"
 interface TournamentOption {
   id: string
   title: string
-  imageUrl: string
+  imageUrl: string,
+  videoUrl: string
 }
 
 interface TournamentCategory {

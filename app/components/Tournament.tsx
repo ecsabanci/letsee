@@ -13,7 +13,8 @@ import { EmojiBar } from "./EmojiBar"
 interface TournamentOption {
   id: string
   title: string
-  imageUrl: string
+  imageUrl: string,
+  videoUrl: string
 }
 
 interface TournamentCategory {
@@ -50,13 +51,6 @@ interface TournamentProps {
   onTournamentEnd: (winner: TournamentOption) => void
   socket: Socket | null
   gameCode: string
-}
-
-const ROUND_NAMES: { [key: number]: string } = {
-  1: "İlk Eleme Turu",
-  2: "Çeyrek Final",
-  3: "Yarı Final",
-  4: "Final"
 }
 
 interface ChatMessageProps {

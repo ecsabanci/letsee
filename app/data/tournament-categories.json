@@ -331,6 +331,92 @@
           "imageUrl": "https://images.migrosone.com/sanalmarket/product/07011717/07011717-cdc9e6-1650x1650.jpg"
         }
       ]
+    },
+    {
+      "id": "best-goals",
+      "name": "Son 20 Yılın En İyi 64 Golü",
+      "options": [
+        {
+          "id": "g1",
+          "title": "Zinedine Zidane - Bayer Leverkusen (2002 Şampiyonlar Ligi Finali)",
+          "videoUrl": "https://res.cloudinary.com/dtu1u9edk/video/upload/v1743424169/zidane-leverkusen-2002_btf5ec.mov"
+        },
+        {
+          "id": "g2",
+          "title": "Lionel Messi - Getafe (2007 İspanya Ligi)",
+          "videoUrl": "https://res.cloudinary.com/dtu1u9edk/video/upload/v1743596079/messi-getafe-2007_rhsecl.mov"
+        },
+        {
+          "id": "g3",
+          "title": "Cristiano Ronaldo - Juventus (2018 Şampiyonlar Ligi Çeyrek Finali)",
+          "videoUrl": "https://res.cloudinary.com/dtu1u9edk/video/upload/v1743596260/ronaldo-juventus-2018_crvfhy.mov"
+        },
+        {
+          "id": "g4",
+          "title": "Miroslav Stoch - Fenerbahçe (2010 Türkiye Ligi)",
+          "videoUrl": "https://res.cloudinary.com/dtu1u9edk/video/upload/v1743596525/stoch-puskas_knqd59.mov"
+        },
+        {
+          "id": "g5",
+          "title": "Robin van Persie - İspanya (2014 Dünya Kupası)",
+          "videoUrl": "https://res.cloudinary.com/dtu1u9edk/video/upload/v1743596371/vanpersie-ispanya-2014_kya5xq.mov"
+        },
+        {
+          "id": "g6",
+          "title": "James Rodriguez - Uruguay (2014 Dünya Kupası)",
+          "videoUrl": "https://res.cloudinary.com/dtu1u9edk/video/upload/v1743596625/james-uruguay-2014_s1g1jw.mov"
+        },
+        {
+          "id": "g7",
+          "title": "Gareth Bale - Liverpool (2018 Şampiyonlar Ligi Finali)",
+          "videoUrl": "https://res.cloudinary.com/dtu1u9edk/video/upload/v1743596733/bale-liverpool-2018_fjzgnp.mov"
+        },
+        {
+          "id": "g8",
+          "title": "Neymar - Villarreal (2015 İspanya Ligi)",
+          "videoUrl": "https://res.cloudinary.com/dtu1u9edk/video/upload/v1743596840/neymar-villareal-2015_te9x9m.mov"
+        },
+        {
+          "id": "g9",
+          "title": "Zlatan Ibrahimović - İngiltere (2012 Hazırlık Maçı)",
+          "videoUrl": "https://res.cloudinary.com/dtu1u9edk/video/upload/v1743596969/ibra-ingiltere-2012_fwqfe2.mov"
+        },
+        {
+          "id": "g10",
+          "title": "Dennis Bergkamp - Newcastle United (2002 İngiltere Ligi)",
+          "videoUrl": "https://res.cloudinary.com/dtu1u9edk/video/upload/v1743597122/Bergkamp-newcastle-2002_leo76o.mov"
+        },
+        {
+          "id": "g11",
+          "title": "Dimitri Payet - West Ham United (2015 İngiltere Ligi)",
+          "videoUrl": "https://res.cloudinary.com/dtu1u9edk/video/upload/v1743597917/payet-westham-freekick_y8ifaf.mov"
+        },
+        {
+          "id": "g12",
+          "title": "Thierry Henry - Real Madrid (2006 Şampiyonlar Ligi)",
+          "videoUrl": "https://res.cloudinary.com/dtu1u9edk/video/upload/v1743597339/henry-madrid-2006_pirdea.mov"
+        },
+        {
+          "id": "g13",
+          "title": "Diego Forlán - Almanya (2010 Dünya Kupası)",
+          "videoUrl": "https://res.cloudinary.com/dtu1u9edk/video/upload/v1743597492/forlan-almanya-2010_mcvwhe.mov"
+        },
+        {
+          "id": "g14",
+          "title": "Giovanni van Bronckhorst - Uruguay (2010 Dünya Kupası)",
+          "videoUrl": "https://res.cloudinary.com/dtu1u9edk/video/upload/v1743597619/Bronckhorst-uruguay-2010_hx1ilo.mov"
+        },
+        {
+          "id": "g15",
+          "title": "Wayne Rooney - Manchester City (2011 İngiltere Ligi)",
+          "videoUrl": "https://res.cloudinary.com/dtu1u9edk/video/upload/v1743597672/rooney-city_m0yeq3.mov"
+        },
+        {
+          "id": "g16",
+          "title": "Radamel Falcao - Atlético Madrid (2012 Avrupa Ligi Finali)",
+          "videoUrl": "https://res.cloudinary.com/dtu1u9edk/video/upload/v1743597769/falcao-atlmadrid_s74y8u.mov"
+        }
+      ]
     }
   ]
 }
