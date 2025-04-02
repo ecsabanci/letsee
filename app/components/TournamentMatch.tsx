@@ -39,10 +39,9 @@ function MediaDisplay({ option }: { option: TournamentOption }) {
     return (
       <video
         src={option.videoUrl}
-        className="object-contain"
+        className="object-contain [&::-webkit-media-controls]:hidden"
         width={600}
         height={600}
-        controls
         loop
         muted
         autoPlay
