@@ -9,41 +9,10 @@ import { Button } from "./ui/button"
 import { PaperAirplaneIcon, XMarkIcon, ChevronDownIcon, ChevronUpIcon, ArrowPathIcon } from "@heroicons/react/24/outline"
 import { PlayersList } from "./PlayersList"
 import { EmojiBar } from "./EmojiBar"
+import { TournamentOption, TournamentCategory, Player, Match, ChatMessage } from '@/types/tournament'
 
-interface TournamentOption {
-  id: string
-  title: string
-  imageUrl: string,
-  videoUrl: string
-}
-
-interface TournamentCategory {
-  id: string
-  name: string
-  options: TournamentOption[]
-}
-
-interface Match {
-  id: string
-  round: number
-  option1: TournamentOption
-  option2: TournamentOption
-  votes: { [key: string]: number }
-  votedPlayers: string[]
-}
-
-interface ChatMessage {
-  id: string
-  playerName: string
-  message: string
-  timestamp: number
-}
-
-interface Player {
-  id: string
-  name: string
-  isReady: boolean
-  isAdmin: boolean
+interface ChatMessageProps {
+  message: ChatMessage
 }
 
 interface TournamentProps {
@@ -51,10 +20,6 @@ interface TournamentProps {
   onTournamentEnd: (winner: TournamentOption) => void
   socket: Socket | null
   gameCode: string
-}
-
-interface ChatMessageProps {
-  message: ChatMessage
 }
 
 const ChatMessageItem = memo(function ChatMessageItem({ message }: ChatMessageProps) {

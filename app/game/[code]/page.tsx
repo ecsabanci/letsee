@@ -17,7 +17,7 @@ import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/outline"
 import { QuestionGenerator } from "@/app/components/QuestionGenerator"
 import { TournamentSetup } from "@/app/components/TournamentSetup"
 import { Tournament } from "@/app/components/Tournament"
-import { TournamentOption } from 'types/tournament'
+import { TournamentOption, TournamentCategory, Player, Match, ChatMessage } from '@/types/tournament'
 
 // Socket.IO sunucu URL'ini ortama göre ayarla
 const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3002"
@@ -26,14 +26,6 @@ interface JoinRequest {
   id: string
   name: string
   timestamp: number
-}
-
-interface Player {
-  id: string
-  name: string
-  answer: string
-  isReady: boolean
-  isAdmin: boolean
 }
 
 interface JoinRequestApprovedData {
@@ -51,17 +43,6 @@ interface EmojiReaction {
   id: string
   emoji: string
   playerName: string
-}
-
-interface TournamentCategory {
-  id: string
-  name: string
-  options: Array<{
-    id: string
-    title: string
-    imageUrl: string,
-    videoUrl: string
-  }>
 }
 
 export default function GamePage({ params }: { params: { code: string } }) {
