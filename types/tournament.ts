@@ -1,12 +1,19 @@
 export interface TournamentOption {
   id: string
-  name: string
-  imageUrl?: string,
+  title: string
+  imageUrl?: string
   videoUrl?: string
+}
+
+export interface TournamentCategory {
+  id: string
+  name: string
+  options: TournamentOption[]
 }
 
 export interface Match {
   id: string
+  round: number
   option1: TournamentOption
   option2: TournamentOption
   votes: { [key: string]: number }
@@ -16,6 +23,7 @@ export interface Match {
 export interface Player {
   id: string
   name: string
+  answer: string
   isReady: boolean
   isAdmin: boolean
 }

@@ -3,19 +3,7 @@
 import { useState } from "react"
 import { Button } from "./Button"
 import tournamentData from "../data/tournament-categories.json"
-
-interface TournamentOption {
-  id: string
-  title: string
-  imageUrl: string,
-  videoUrl: string
-}
-
-interface TournamentCategory {
-  id: string
-  name: string
-  options: TournamentOption[]
-}
+import { TournamentOption, TournamentCategory } from '@/types/tournament'
 
 interface TournamentSetupProps {
   onStartTournament: (category: TournamentCategory) => void
@@ -41,14 +29,24 @@ export function TournamentSetup({ onStartTournament }: TournamentSetupProps) {
           >
             <h3 className="text-lg font-semibold text-white">{category.name}</h3>
             <div className="mt-2 grid grid-cols-4 gap-2">
-              {category.options.slice(0, 4).map((option) => (
-                <img
-                  key={option.id}
-                  src={option.imageUrl}
-                  alt={option.title}
-                  className="w-full h-16 object-cover rounded"
-                />
-              ))}
+              {category.options
+                .filter((option): option is TournamentOption & { imageUrl: string } => 
+                  'imageUrl' in option && typeof option.imageUrl === 'string'
+                )
+                .slice(0, 4)
+                .map((option) => (
+                  <img
+                    key={option.id}
+                    src={option.imageUrl}
+                    alt={option.title}
+                    className="w-full h-16 object-cover rounded"
+                  />
+                ))}
+              {category.options.every(option => !('imageUrl' in option)) && (
+                <div className="col-span-4 bg-gray-800 rounded p-2 text-center text-sm text-gray-400">
+                  Video Koleksiyonu
+                </div>
+              )}
             </div>
           </button>
         ))}
